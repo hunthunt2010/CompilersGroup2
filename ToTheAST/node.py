@@ -12,6 +12,11 @@ class Node:
     def addChild(self, newChild):
         self.children.append(newChild)
 
+    def adoptChildren(self, otherNode):
+        if otherNode is not None:
+            for child in otherNode.children:
+                self.children.append(child)
+
     def isLeaf(self):
         if len(self.children) == 0:
             return True
@@ -23,6 +28,14 @@ class Node:
 
     def getData(self):
         return self.data
+
+    def showSelf(self):
+        temp = "%s %s :" % (self.name, self.data)
+        for child in self.children:
+            if child is not None:
+                temp += " (%s,%s)" % (child.name, child.data)
+
+        return temp
 
     def getNames(self):
         temp = "%s %s\n" % (self.name, self.data)

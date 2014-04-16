@@ -93,7 +93,8 @@ def p_STMTS(p):
     'STMTS : STMT STMTS'
     p[0] = Node("STMTS",  "STMTS")
     p[0].addChild(p[1])
-    p[0].addChild(p[2])
+    p[0].adoptChildren(p[2])
+    # print(p[0].showSelf())
 
 def p_EMPTY_STMTS(p):
     'STMTS :'
