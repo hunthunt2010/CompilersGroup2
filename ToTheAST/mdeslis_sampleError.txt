@@ -1,0 +1,16 @@
+// The following is simple sample to run through the scanner that will force it to error
+// Maria Deslis
+
+
+const int x = 6;
+int y = 10;
+int i = x + y;
+int j = x - y;
+
+
+if ( j < i ) {
+	z = 20;
+	return z;
+} else {
+	return y;
+}
