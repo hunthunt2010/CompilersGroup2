@@ -233,15 +233,22 @@ def p_error(p):
 lex.lex()
 parser = yacc.yacc()
 
+# use only file names that don't start with '-', since those are commandline arguments, and not files
+files = []
+for arg in sys.argv[1:]:
+    if arg[0] != '-':
+        files.append(arg)
 
 s = ""
-for line in fileinput.input():
+for line in fileinput.input(files):
     s += line
 
 root = parser.parse(s)
 
-print(root.getNames())
-print(root.getChildren())
+if '-symtable' in sys.argv:
+    # Show the symbol table
+    print(root.processSymbolTable())
+else:
+    print(root.getNames())
+    print(root.getChildren())
 
-# Show the symbol table
-print(root.processSymbolTable())

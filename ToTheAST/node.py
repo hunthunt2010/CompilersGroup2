@@ -67,7 +67,6 @@ class Node:
     # the SymbolTable is a hash of type: {SymbolName :String -> {ScopeLevel :int -> Node }}
     # Note: the stack is initialzied with level 0 (Global scope)
     def processSymbolTable(self, symbolTable={}, scopelevelstack=[0], allscopes=[0]):
-        print("Processing node %s" % self.showSelf())
         # Depending on what type I am, we may process self and children differently
         if self.data == 'DECL':
             # DECL is the important one for processing variable instantion
