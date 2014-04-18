@@ -81,7 +81,7 @@ def t_ignore_comment(t):
     pass
 
 def t_error(t):
-    sys.stderr.write("Illegal character (%d): %s\n" % (t.lineno))
+    sys.stderr.write("Illegal character (%d): %s\n" % (t.lineno, t))
     sys.exit(1)
 
 def p_START(p):
@@ -243,4 +243,5 @@ root = parser.parse(s)
 print(root.getNames())
 print(root.getChildren())
 
-
+# Show the symbol table
+print(root.processSymbolTable())
