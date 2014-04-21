@@ -104,9 +104,3 @@ class Node:
                 if child is not None:
                     child.processSymbolTable(symbolTable)
         return symbolTable
-
-    # Leverage the python global intern to store the symbols
-    @staticmethod
-    def symToNamespace(symbolTable):
-        for name in symbolTable:
-            intern(name)

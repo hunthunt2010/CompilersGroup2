@@ -2,6 +2,9 @@
 from collections import namedtuple
 SymEntry = namedtuple('SymEntry', ['name', 'symtype', 'scope', 'depth'])
 
+# Exists as a built-in for Python2, but was put in sys for python 3
+from sys import intern
+
 class SymbolTable:
     def __init__(self):
         # Contains scope-depth. this is different from scope level, because
@@ -52,6 +55,7 @@ class SymbolTable:
             self._symbolHash[name] = {}
 
         # print("Making %s at scope=%i, depth=%i" % (name, self._scopelevelstack[-1], self._depth))
-        newSym = SymEntry(name=name, symtype=symtype, scope=self._scopelevelstack[-1], depth=self._depth)
+        # Use python's global intern to compress string-names into an intern (Same thing as our NameSpace)
+        newSym = SymEntry(name=intern(name), symtype=symtype, scope=self._scopelevelstack[-1], depth=self._depth)
 
         self._symbolHash[name][newSym.scope] = newSym
