@@ -221,7 +221,7 @@ def p_TYPE(p):
 def p_TYPE_INT(p):
     '''TYPE : int'''
     p[0] = Node('TYPE', p[1])
-                          
+
 def p_MODIFIER(p):
     'MODIFIER : const'
     p[0] = Node("MODIFIER","const")
@@ -247,7 +247,9 @@ root = parser.parse(s)
 
 if '-symtable' in sys.argv:
     # Show the symbol table
-    print(root.processSymbolTable())
+    symTable = root.processSymbolTable()
+    print(symTable)
+    # Node.symToNamespace(symTable)
 else:
     print(root.getNames())
     print(root.getChildren())

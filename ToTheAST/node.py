@@ -1,4 +1,8 @@
 
+from sys import intern
+
+from symboltable import SymbolTable
+
 class Node:
     count = 0
 
@@ -8,14 +12,18 @@ class Node:
         self.data = data
         #index 0 in child list = left most child
         self.children = []
+        self.parent = None
 
     def addChild(self, newChild):
-        self.children.append(newChild)
+        if newChild is not None:
+            self.children.append(newChild)
+            newChild.parent = self
 
     def adoptChildren(self, otherNode):
         if otherNode is not None:
             for child in otherNode.children:
                 self.children.append(child)
+                child.parent = self
 
     def isLeaf(self):
         if len(self.children) == 0:
@@ -49,7 +57,6 @@ class Node:
         if len(self.children) == 0:
             return ""
 
-
         temp = str(self.name) + " "
         for child in self.children:
             if child is not None:
@@ -62,44 +69,44 @@ class Node:
 
         return temp
 
-    # Revision 1: NOT PERFECT
-    # TODO: Put more thought into this data-structure
-    # the SymbolTable is a hash of type: {SymbolName :String -> {ScopeLevel :int -> Node }}
-    # Note: the stack is initialzied with level 0 (Global scope)
-    def processSymbolTable(self, symbolTable={}, scopelevelstack=[0], allscopes=[0]):
+    # Revision 2; Very book-like
+    def processSymbolTable(self, symbolTable=SymbolTable()):
         # Depending on what type I am, we may process self and children differently
         if self.data == 'DECL':
             # DECL is the important one for processing variable instantion
-            if self.children[1].data not in symbolTable: symbolTable[self.children[1].data] = {}
+            symbolTable.enterSymbol(self.children[1].data, None)
 
-            symbolTable[self.children[1].data][scopelevelstack[-1]] = self.children[1]
-            self.children[2].processSymbolTable(symbolTable, scopelevelstack, allscopes)
+            self.children[2].processSymbolTable(symbolTable)
 
         elif self.data == 'MULTI_ASSIGN':
-            if self.children[0].data not in symbolTable: symbolTable[self.children[0].data] = {}
+            symbolTable.enterSymbol(self.children[0].data, None)
 
-            symbolTable[self.children[0].data][scopelevelstack[-1]] = self.children[0]
             for child in self.children:
                 if child is not None:
-                    child.processSymbolTable(symbolTable, scopelevelstack, allscopes)
+                    child.processSymbolTable(symbolTable)
 
         elif self.data == 'IF_ELSE':
-            # Descend on the if-statements
-            nextscope = max(allscopes)+1
-            scopelevelstack.append(nextscope)
-            allscopes.append(nextscope)
-            self.children[1].processSymbolTable(symbolTable, scopelevelstack, allscopes)
-            scopelevelstack.pop()
+            symbolTable.openScope()
+            self.children[1].processSymbolTable(symbolTable)
+            symbolTable.closeScope()
 
             # Descend on the else-statements
-            nextscope = max(allscopes)+1
-            scopelevelstack.append(nextscope)
-            allscopes.append(nextscope)
-            self.children[2].processSymbolTable(symbolTable, scopelevelstack, allscopes)
-            scopelevelstack.pop()
+            symbolTable.openScope()
+            self.children[2].processSymbolTable(symbolTable)
+            symbolTable.closeScope()
 
+        elif self.data == 'IF':
+            symbolTable.openScope()
+            self.children[1].processSymbolTable(symbolTable)
+            symbolTable.closeScope()
         else:
             for child in self.children:
                 if child is not None:
-                    child.processSymbolTable(symbolTable, scopelevelstack, allscopes)
+                    child.processSymbolTable(symbolTable)
         return symbolTable
+
+    # Leverage the python global intern to store the symbols
+    @staticmethod
+    def symToNamespace(symbolTable):
+        for name in symbolTable:
+            intern(name)
