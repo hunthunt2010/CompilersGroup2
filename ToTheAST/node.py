@@ -7,7 +7,8 @@ class Node:
     count = 0
 
     def __init__(self, name, data):
-        self.name = Node.count
+        # self.name = Node.count
+        self.name = name
         Node.count += 1
         self.data = data
         #index 0 in child list = left most child
@@ -104,3 +105,9 @@ class Node:
                 if child is not None:
                     child.processSymbolTable(symbolTable)
         return symbolTable
+
+    def accept(self, visitor):
+        # I've already been visited.. so, let's
+        # visit all my children if I have any
+        for child in self.children:
+            visitor.visit(child)

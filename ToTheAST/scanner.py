@@ -21,6 +21,8 @@ import ply.yacc as yacc
 
 from node import Node
 
+import visitor
+
 reserved = {'int' : 'int',
         'const' : 'const',
         'if' : 'if',
@@ -250,6 +252,8 @@ if '-symtable' in sys.argv:
     symTable = root.processSymbolTable()
     print(symTable)
     # Node.symToNamespace(symTable)
+elif '-visit' in sys.argv:
+    visitor.PrintVisitor().visit(root)
 else:
     print(root.getNames())
     print(root.getChildren())
