@@ -20,7 +20,7 @@ class SymbolTable:
         self.errors = False
 
     def getCurrentScope(self):
-        return self._scopelevelstack[-1]
+        return self._scopelevelstack[0]
 
     def __str__(self):
         return str(self._symbolHash)
@@ -30,13 +30,13 @@ class SymbolTable:
 
         nextScope = max(self._allscopes)+1
         # print("New scope: %i" % nextScope)
-        self._scopelevelstack.append(nextScope)
+        self._scopelevelstack.insert(0, nextScope)
         self._allscopes.append(nextScope)
 
     def closeScope(self):
         self._depth -= 1
 
-        self._scopelevelstack.pop()
+        self._scopelevelstack.pop(0)
 
     def retrieveScope(self, symbol, level=-1):
         '''Returns the symbol-table entry for the symbol at the specified level.
@@ -51,7 +51,13 @@ class SymbolTable:
                 return self._symbolHash[symbol][level]
         else:
             # level == -1. Return the inner-most entry
-            return self._symbolHash[symbol][max(self._symbolHash[symbol])]
+            for scope in self._scopelevelstack:
+                # print("Checking for %s in scope %i" % (symbol, scope))
+                if scope in self._symbolHash[symbol]:
+                    # print("Returning", self._symbolHash[symbol][scope])
+                    return self._symbolHash[symbol][scope]
+            # print("Could not find %s" % symbol)
+            return None
 
     # TODO: Type??
     def enterSymbol(self, name, symtype):
@@ -59,13 +65,13 @@ class SymbolTable:
             self._symbolHash[name] = {}
 
         if name in self._symbolHash:
-            if self._scopelevelstack[-1] in self._symbolHash[name]:
+            if self._scopelevelstack[0] in self._symbolHash[name]:
                 # This variable was previously defined for the scope
-                print("Variable %s was already defined in scope %i" % (name, self._scopelevelstack[-1]) , file=stderr)
+                print("Variable %s was already defined in scope %i" % (name, self._scopelevelstack[0]) , file=stderr)
                 self.errors = True
 
         # print("Making %s at scope=%i, depth=%i" % (name, self._scopelevelstack[-1], self._depth))
         # Use python's global intern to compress string-names into an intern (Same thing as our NameSpace)
-        newSym = SymEntry(name=intern(name), symtype=symtype, scope=self._scopelevelstack[-1], depth=self._depth)
+        newSym = SymEntry(name=intern(name), symtype=symtype, scope=self._scopelevelstack[0], depth=self._depth)
 
         self._symbolHash[name][newSym.scope] = newSym
