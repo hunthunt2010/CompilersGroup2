@@ -2,6 +2,7 @@
 const int a = 1;
 int x = 1<<a;
 int y, z = 3;
+int z;
 
 y = z - x;
 if ( y <= 0 ) {

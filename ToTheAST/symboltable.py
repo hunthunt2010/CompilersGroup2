@@ -3,7 +3,7 @@ from collections import namedtuple
 SymEntry = namedtuple('SymEntry', ['name', 'symtype', 'scope', 'depth'])
 
 # Exists as a built-in for Python2, but was put in sys for python 3
-from sys import intern
+from sys import intern, stderr
 
 class SymbolTable:
     def __init__(self):
@@ -17,6 +17,7 @@ class SymbolTable:
         # Current depth is stored as _scopelevelstack[-1]
         self._scopelevelstack=[0]
         self._allscopes=[0]
+        self.errors = False
 
     def __str__(self):
         return str(self._symbolHash)
@@ -53,6 +54,12 @@ class SymbolTable:
     def enterSymbol(self, name, symtype):
         if name not in self._symbolHash:
             self._symbolHash[name] = {}
+
+        if name in self._symbolHash:
+            if self._scopelevelstack[-1] in self._symbolHash[name]:
+                # This variable was previously defined for the scope
+                print("Variable %s was already defined in scope %i" % (name, self._scopelevelstack[-1]) , file=stderr)
+                self.errors = True
 
         # print("Making %s at scope=%i, depth=%i" % (name, self._scopelevelstack[-1], self._depth))
         # Use python's global intern to compress string-names into an intern (Same thing as our NameSpace)

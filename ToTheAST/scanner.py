@@ -263,7 +263,11 @@ elif '-visit' in sys.argv:
 
 elif '-symvisit' in sys.argv:
     symtable = visitor.SymbolVisitor().visit(root)
-    print(symtable)
+    if symtable.errors:
+        print("Symbol table had errors")
+        sys.exit(-1)
+    else:
+        print(symtable)
 
 elif '-arithmetic' in sys.argv:
     visitor.ArithmeticTransformer().visit(root)
