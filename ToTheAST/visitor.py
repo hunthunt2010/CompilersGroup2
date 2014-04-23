@@ -1,4 +1,5 @@
 from symboltable import SymbolTable
+from sys import stderr
 
 class Visitor:
     def visit(self, node):
@@ -58,6 +59,12 @@ class SymbolVisitor(Visitor):
             self.table.openScope()
             node.children[1].accept(self)
             self.table.closeScope()
+
+        elif node.name == "VALUE" or node.name == "IDENTIFIER":
+            # Check that the symbol is accessible in this scope
+            if type(node.data) is str and self.table.retrieveScope(node.data) is None:
+                print("The symbol %s is not accessible in scope %i" % (node.data, self.table.getCurrentScope()), file=stderr)
+                self.table.errors = True
 
         else:
             node.accept(self)

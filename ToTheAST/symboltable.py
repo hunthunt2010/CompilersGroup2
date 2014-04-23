@@ -19,6 +19,9 @@ class SymbolTable:
         self._allscopes=[0]
         self.errors = False
 
+    def getCurrentScope(self):
+        return self._scopelevelstack[-1]
+
     def __str__(self):
         return str(self._symbolHash)
 
