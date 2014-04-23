@@ -41,6 +41,8 @@ tokens = [
         'minus',
         'multiply',
         'lessequal',
+        'lessthan',
+        'greaterthan',
         'divide',
         'int_value',
         'identifier',
@@ -54,6 +56,8 @@ t_lb = r'{'
 t_rb = r'}'
 t_leftshift = r'<<'
 t_lessequal = r'<='
+t_lessthan = r'<'
+t_greaterthan = r'>'
 t_plus = r'\+'
 t_minus = r'-'
 t_multiply = r'\*'
@@ -73,7 +77,7 @@ def t_newline(t):
     pass
 
 def t_int_value(t):
-    r'[0-9][0-9]*'
+    r'-?[0-9][0-9]*'
     t.value = int(t.value)
     return t
 
@@ -192,6 +196,8 @@ def p_BINARYOPERATOR(p):
                       | minus
                       | multiply
                       | divide
+                      | lessthan
+                      | greaterthan
                       | lessequal'''
     p[0] = Node("BINARYOPEAROR", p[1])
 
@@ -229,7 +235,7 @@ def p_MODIFIER(p):
     p[0] = Node("MODIFIER","const")
 
 def p_error(p):
-    sys.stderr.write("Unknown Token(%d): %s\n" % (str(p.lineno), p.value))
+    sys.stderr.write("Unknown Token(%d): %s\n" % (p.lineno, p.value))
     sys.exit(2)
 
 lex.lex()
@@ -254,6 +260,11 @@ if '-symtable' in sys.argv:
     # Node.symToNamespace(symTable)
 elif '-visit' in sys.argv:
     visitor.PrintVisitor().visit(root)
+
+elif '-symvisit' in sys.argv:
+    symtable = visitor.SymbolVisitor().visit(root)
+    print(symtable)
+
 else:
     print(root.getNames())
     print(root.getChildren())

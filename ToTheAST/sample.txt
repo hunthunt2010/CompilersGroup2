@@ -11,6 +11,7 @@ if ( y <= 0 ) {
         z = z - 1;
    }
 } else {
+   int z = 1;
    z = z / y;
 }
 
