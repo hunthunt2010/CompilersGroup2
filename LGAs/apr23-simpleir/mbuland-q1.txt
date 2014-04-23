@@ -1,12 +1,36 @@
 
 int x = 3;
 int y =-3;
-int z = x + 3*y;
+int z = x + 3*y;    // A represents this syntax node
 
-if( z < 0 ) {
-    x = x - 1;
-    y = x + 1;
-}else{
+if ( z < 0 ) {      // D
+    x = x - 1;      // B represents this syntax node
+    y = x + 1;      // C for this syntax node
+} else {
     z = 0
 }
 
+
+IR prep:
+x = RU
+y = RV
+z = RW
+
+IR:
+immld RU, 3
+immld RV, -3
+calc RW, A
+
+// if
+calc RX, D
+relbtrue 3 RX   // Note: N ignores these comments
+
+// else
+immld RW, 0
+reljump 3
+
+// then
+calc RU, B
+calc RV, C
+
+// post-if
