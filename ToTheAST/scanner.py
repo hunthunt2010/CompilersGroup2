@@ -265,6 +265,10 @@ elif '-symvisit' in sys.argv:
     symtable = visitor.SymbolVisitor().visit(root)
     print(symtable)
 
+elif '-arithmetic' in sys.argv:
+    visitor.ArithmeticTransformer().visit(root)
+    visitor.PrintVisitor().visit(root)
+
 else:
     print(root.getNames())
     print(root.getChildren())

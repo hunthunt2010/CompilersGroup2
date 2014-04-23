@@ -34,17 +34,17 @@ class SymbolVisitor(Visitor):
 
     def visit(self, node):
 
-        if node.data == 'DECL':
+        if node.name == 'DECL':
             # DECL is the important one for processing variable instantion
             self.table.enterSymbol(node.children[1].data, None)
             super().visit(node)
 
-        elif node.data == 'MULTI_ASSIGN':
+        elif node.name == 'MULTI_ASSIGN':
             self.table.enterSymbol(node.children[0].data, None)
 
             super().visit(node)
 
-        elif node.data == 'IF_ELSE':
+        elif node.name == 'IF_ELSE':
             self.table.openScope()
             node.children[1].accept(self)
             self.table.closeScope()
@@ -54,7 +54,7 @@ class SymbolVisitor(Visitor):
             node.children[2].accept(self)
             self.table.closeScope()
 
-        elif node.data == 'IF':
+        elif node.name == 'IF':
             self.table.openScope()
             node.children[1].accept(self)
             self.table.closeScope()
@@ -63,3 +63,24 @@ class SymbolVisitor(Visitor):
             node.accept(self)
 
         return self.table
+
+class ArithmeticTransformer(Visitor):
+
+    def visit(self, node):
+        # print("Visiting node: %s" % node.showSelf())
+        if node.name == 'EXPR_BINOP':
+            node.name = node.children[1].name
+            node.data = node.children[1].data
+
+            node.children.pop(1)
+            super().visit(node)
+
+        elif node.name == 'EXPR':
+            node.name = node.children[0].name
+            node.data = node.children[0].data
+
+            node.children = []
+            super().visit(node)
+
+        else:
+            super().visit(node)

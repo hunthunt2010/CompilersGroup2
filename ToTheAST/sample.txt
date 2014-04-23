@@ -8,7 +8,7 @@ if ( y <= 0 ) {
    z = (x+2) + z*z ;
    if ( z <= 0) {
         int z = 4;
-        z = z - 1;
+        z = z - 1 + 3 - 4;
    }
 } else {
    int z = 1;
