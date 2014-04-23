@@ -1,0 +1,56 @@
+
+int x = 3;  // memaddr 1
+int y =-3;  // 2
+int z;      // 3
+
+for ( int y=1000, z=0; y!=0; y=y-1 ) {  // y != 0 is the syntax part A  // y=y-1 is D
+    z = z + y;  // B
+    x = 4*y / z; // C
+}
+
+
+IR:
+
+immpush 3
+mempop 1
+
+immpush -3
+mempop 2
+
+// loop pre-load using memaddr 4
+immpush 1000
+mempop 4
+
+immpush 0
+mempop 3
+
+// condition check
+calc RX, A
+bfalse end, RX
+
+// loop eval
+calc RD, B
+push RD
+mempop 3
+
+calc RD, C
+push RD
+mempop 1
+
+// Step
+calc RD D
+push RD
+mempop 4
+
+// jump to condition check
+jump condition check
+
+
+// end label - this instr addr is defined by 'end'
+
+
+USEFUL COMMANDS:
+already, immsv @, N would be nice
+what are the math operations?
+labels for addresses would be nice
+the abstraction of 'calc' seems improper
