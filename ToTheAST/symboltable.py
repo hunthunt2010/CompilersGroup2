@@ -84,8 +84,8 @@ class SymbolTable:
     def createMemoryMap(self):
         # SymEntry -> memlocation
         mmap = {}
+        memloc = 0
 
-        int memloc = 0
         for var in self._symbolHash:
             for scope in self._symbolHash[var]
                 mmap[self._symbolHash[var][scope]] = memloc
