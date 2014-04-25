@@ -100,7 +100,7 @@ class ArithmeticTransformer(Visitor):
             super().visit(node)
 
 class IntermediateRepresentation(Visitor):
-	def __init__(self, file=stderr):
+	def __init__(self, symboltable, mmap, file=stderr):
 		self.table = SymbolTable()
 		self.output = file
 
@@ -123,12 +123,12 @@ class IntermediateRepresentation(Visitor):
 		elif node.name == 'IF_ELSE':
 			if len(node.children) > 2:
 				if node.children[0].name == 'BINARYOPEAROR':
-					print("calc RX," + str(node.childern[0]))
+					print("calc RX," + str(node.children[0]))
 
 		elif node.name == 'IF':
 			if len(node.children) > 2:
 				if node.children[0].name == 'BINARYOPEAROR':
-					print("calc RX," + str(node.childern[0]))
+					print("calc RX," + str(node.children[0]))
 
 		elif node.name == 'ASSIGN':
 			print("calc RX," + str(node.children[1]))
