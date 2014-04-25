@@ -1,18 +1,5 @@
 #!/usr/bin/env python
 
-# const int a = 1;
-# int x = 1<<a;
-# int y, z = 3;
-# 
-# y = z - x;
-# if ( y <= 0 ) {
-#    z = (x+2) + z*z ;
-# } else {
-#    z = z / y;
-# }
-# 
-# return z;
-
 import fileinput
 import sys
 
@@ -20,8 +7,9 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 from node import Node
+from io import StringIO
 
-import visitor
+from visitor import *
 
 reserved = {'int' : 'int',
         'const' : 'const',
@@ -234,9 +222,10 @@ def p_MODIFIER(p):
     'MODIFIER : const'
     p[0] = Node("MODIFIER","const")
 
+errors = StringIO()
+
 def p_error(p):
-    sys.stderr.write("Unknown Token(%d): %s\n" % (p.lineno, p.value))
-    sys.exit(2)
+    errors.write("Unknown Token(%d): %s\n" % (p.lineno, p.value))
 
 lex.lex()
 parser = yacc.yacc()
@@ -253,12 +242,14 @@ for line in fileinput.input(files):
 
 root = parser.parse(s)
 
-if '-symtable' in sys.argv:
+# DEPRICATED. Use the SymbolVisitor instead
+# if '-symtable' in sys.argv:
     # Show the symbol table
-    symTable = root.processSymbolTable()
-    print(symTable)
+    # symTable = root.processSymbolTable()
+    # print(symTable)
     # Node.symToNamespace(symTable)
-elif '-visit' in sys.argv:
+
+if '-visit' in sys.argv:
     visitor.PrintVisitor().visit(root)
 
 elif '-symvisit' in sys.argv:
@@ -277,6 +268,27 @@ elif '-ir' in sys.argv:
 	visitor.IntermediateRepresentation().visit(root)
 
 else:
-    print(root.getNames())
-    print(root.getChildren())
+    # DEPRICATED Old way of disylaying the output for ToTheAST. Instead, use the SymbolVisitor
+    # print(root.getNames())
+    # print(root.getChildren())
 
+    # Output requirements for ToTheIR:
+    # OUTPUT.p:     raw parse tree like in ToTheAST
+    ptfile = open("OUTPUT.p", "w")
+    PrintVisitor(file=ptfile).visit(root)
+
+    # OUTPUT.a:     abstract syntax tree that uses arithmetic syntax trees instead
+    astfile = open("OUTPUT.a", "w")
+    # NOTE: The arithmetic transformer modifies the AST IN-PLACE
+    ArithmeticTransformer().visit(root)
+    PrintVisitor(file=astfile).visit(root)
+
+
+    # OUTPUT.ir:    listing of the courses' IR instructions?
+
+    # OUTPUT.err:   list of errors during compilation
+    errfile = open("OUTPUT.err", "w")
+    print(errors.getvalue(), file=errfile)
+
+    # If there are errors, there should be one per line. Counting the number of lines should cound the number of errors
+    exit(len(errors.getvalue().split('\n')) - 1)
