@@ -1,7 +1,7 @@
 // language example 0
 const int a = 1;
 int x = 1<<a;
-int y, z = 3;
+int y, z, m=2,n,p = 3;
 int c;
 
 y = z - x;

@@ -31,7 +31,7 @@ class PrintVisitor(Visitor):
         super().visit(node)
 
 class SymbolVisitor(Visitor):
-    def __init__(self, file=sys.stderr):
+    def __init__(self, file=stderr):
         self.table = SymbolTable()
         self.output = file
 
@@ -93,3 +93,56 @@ class ArithmeticTransformer(Visitor):
 
         else:
             super().visit(node)
+
+class IntermediateRepresentation(Visitor):
+	def __init__(self, file=stderr):
+		self.table = SymbolTable()
+		self.output = file
+
+	def visit(self, node):
+		if node.name == 'RETURN':
+			print("return")
+		
+		elif node.name == 'VALUE':
+			print("immld RX," + str(node.data))
+
+		elif node.name == 'IDENTIFIER':
+			print("memld RX," + str(node.data))
+
+		elif node.name == 'VARIABLE':
+			print("memld RX," + str(node.data))
+
+		elif node.name == 'BINARYOPEAROR':
+			print("calc RX," + str(node))
+
+		elif node.name == 'IF':
+			print("if : ")
+
+
+		elif node.name == 'IF_ELSE':
+			print("if_else : ")
+
+		elif node.name == 'ASSIGN':
+			print("calc RX," + str(node.children[1]))
+			print("memst RX,@")
+
+		elif node.name == 'DECL':
+			if len(node.children) > 2:
+				if node.children[2].name != 'MULTI_ASSIGN':
+					print("calc RX," + str(node.children[2]))
+					print("memst RX,@")
+
+		elif node.name == 'MULTI_ASSIGN':
+			print("calc RD," + str(node.children[1]))
+			print("memst RX,@")
+
+		elif node.name == 'MODIFIER':
+			print("modifier : ")
+
+		elif node.name == 'VARIABLE':
+			print("variable : ")
+
+		if len(node.children) > 0:
+			node.accept(self)
+
+		return self.table

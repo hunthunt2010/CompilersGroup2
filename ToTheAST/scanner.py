@@ -266,8 +266,11 @@ elif '-symvisit' in sys.argv:
         print(symtable)
 
 elif '-arithmetic' in sys.argv:
-    visitor.ArithmeticTransformer().visit(root)
-    visitor.PrintVisitor().visit(root)
+    ArithmeticTransformer().visit(root)
+    PrintVisitor().visit(root)
+
+elif '-ir' in sys.argv:
+	IntermediateRepresentation().visit(root)
 
 else:
     # DEPRICATED Old way of disylaying the output for ToTheAST. Instead, use the SymbolVisitor
