@@ -103,45 +103,51 @@ class IntermediateRepresentation(Visitor):
 	def __init__(self, symboltable, mmap, file=stderr):
 		self.table = SymbolTable()
 		self.output = file
+		self.mmap = mmap
+		self.symboltable = symboltable
 
 	def visit(self, node):
 		if node.name == 'RETURN':
 			print("return")
 		
 		elif node.name == 'VALUE':
-			print("immld RX," + str(node.data))
+			print("immld RX,",node.data)
 
 		elif node.name == 'IDENTIFIER':
-			print("memld RX," + str(node.data))
+			print("memld RX,",node.data)
 
 		elif node.name == 'VARIABLE':
-			print("memld RX," + str(node.data))
+			print("memld RX,",node.data)
 
 		elif node.name == 'BINARYOPEAROR':
-			print("calc RX," + str(node))
+			print("calc RX,",node)
 
 		elif node.name == 'IF_ELSE':
 			if len(node.children) > 2:
 				if node.children[0].name == 'BINARYOPEAROR':
-					print("calc RX," + str(node.children[0]))
+					print("calc RX,",node.children[0])
 
 		elif node.name == 'IF':
 			if len(node.children) > 2:
 				if node.children[0].name == 'BINARYOPEAROR':
-					print("calc RX," + str(node.children[0]))
+					print("calc RX,",node.children[0])
 
 		elif node.name == 'ASSIGN':
-			print("calc RX," + str(node.children[1]))
-			print("memst RX,@")
+			print("calc RX,",node.children[1])
+			i = node.children[0].data
+			j = self.symboltable.retrieveScope(i)
+			print("i : ",i)
+			print("j : ",j)
+			print("memst RX,",self.mmap[j])
 
 		elif node.name == 'DECL':
 			if len(node.children) > 2:
 				if node.children[2].name != 'MULTI_ASSIGN':
-					print("calc RX," + str(node.children[2]))
+					print("calc RX,",node.children[2])
 					print("memst RX,@")
 
 		elif node.name == 'MULTI_ASSIGN':
-			print("calc RD," + str(node.children[1]))
+			print("calc RD,",node.children[1])
 			print("memst RX,@")
 
 		if len(node.children) > 0:

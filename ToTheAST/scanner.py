@@ -295,9 +295,11 @@ else:
     # Generate the symbol table
     irfile = open("OUTPUT.ir", "w")
     symboltable = SymbolVisitor().visit(root)
+    print(symboltable)
 
     # Generate a memory map. Goes from SymEntry -> memorylocation
     mmap = symboltable.createMemoryMap()
+    print(mmap)
     IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
 
     # OUTPUT.err:   list of errors during compilation
