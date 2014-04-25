@@ -5,7 +5,7 @@ SymEntry = namedtuple('SymEntry', ['name', 'symtype', 'scope', 'depth'])
 # Exists as a built-in for Python2, but was put in sys for python 3
 from sys import intern, stderr
 
-import namespace 
+from namespace import Namespace
 
 class SymbolTable:
     def __init__(self):

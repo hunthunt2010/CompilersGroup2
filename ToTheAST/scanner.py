@@ -273,6 +273,9 @@ elif '-arithmetic' in sys.argv:
     visitor.ArithmeticTransformer().visit(root)
     visitor.PrintVisitor().visit(root)
 
+elif '-ir' in sys.argv:
+	visitor.IntermediateRepresentation().visit(root)
+
 else:
     print(root.getNames())
     print(root.getChildren())

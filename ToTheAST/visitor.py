@@ -91,3 +91,12 @@ class ArithmeticTransformer(Visitor):
 
         else:
             super().visit(node)
+
+class IntermediateRepresentation(Visitor):
+	
+    def visit(self, node):
+
+        if node.name == 'RETURN':
+			print("RETURN : IntermediateRepresentaion")	
+
+        return self.table
