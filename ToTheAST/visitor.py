@@ -104,19 +104,19 @@ class IntermediateRepresentation(Visitor):
 			print("return")
 		
 		elif node.name == 'VALUE':
-			print("immld RX," + str( node.data))
+			print("immld RX," + str(node.data))
 
 		elif node.name == 'IDENTIFIER':
-			print("identifier : ")
+			print("memld RX," + str(node.data))
 
 		elif node.name == 'VARIABLE':
-			print("variable : ")
+			print("memld RX," + str(node.data))
 			
 		elif node.name == 'TYPE':
 			print("type : ")
 
 		elif node.name == 'BINARYOPEAROR':
-			print("binary operator : ")
+			print("calc RX," + str(node))
 
 		elif node.name == 'IF_ELSE':
 			print("if_else : ")
