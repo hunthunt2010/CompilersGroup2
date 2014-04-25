@@ -36,6 +36,7 @@ class SymbolVisitor(Visitor):
         self.output = file
 
     def visit(self, node):
+        node.scope = self.table.getCurrentScope()
 
         if node.name == 'DECL':
             # DECL is the important one for processing variable instantion
@@ -48,6 +49,8 @@ class SymbolVisitor(Visitor):
             super().visit(node)
 
         elif node.name == 'IF_ELSE':
+            node.children[0].accept(self)
+
             self.table.openScope()
             node.children[1].accept(self)
             self.table.closeScope()
@@ -58,6 +61,8 @@ class SymbolVisitor(Visitor):
             self.table.closeScope()
 
         elif node.name == 'IF':
+            node.children[0].accept(self)
+
             self.table.openScope()
             node.children[1].accept(self)
             self.table.closeScope()

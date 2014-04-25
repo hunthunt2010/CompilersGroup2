@@ -15,6 +15,10 @@ class Node:
         self.children = []
         self.parent = None
 
+        # Scope is set by the SymbolVisitor, later on.
+        # Until changed, assume that all nodes are in global scope
+        self.scope = 0
+
     def addChild(self, newChild):
         if newChild is not None:
             self.children.append(newChild)

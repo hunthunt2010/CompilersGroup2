@@ -293,10 +293,12 @@ else:
 
     # OUTPUT.ir:    listing of the courses' IR instructions?
     # Generate the symbol table
+    irfile = open("OUTPUT.ir", "w")
     symboltable = SymbolVisitor().visit(root)
 
     # Generate a memory map. Goes from SymEntry -> memorylocation
     mmap = symboltable.createMemoryMap()
+    IntermediateRepresentation(symboltable, mmap, file=irfile, error=errors).visit(root)
 
     # OUTPUT.err:   list of errors during compilation
     errfile = open("OUTPUT.err", "w")
