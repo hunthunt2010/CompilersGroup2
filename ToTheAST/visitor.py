@@ -1,28 +1,29 @@
 from symboltable import SymbolTable
-from sys import stderr
+from sys import stderr,stdout
 
 class Visitor:
     def visit(self, node):
         node.accept(self)
 
 class PrintVisitor(Visitor):
-    def __init__(self):
+    def __init__(self, file=stdout):
         self.idcount = 0
+        self.output = file
 
     def prettyChildren(self, node):
         return "%s" % (id(node))
 
     def visit(self, node):
-        # print("%s\t%s" % (id(node), node.name if node.kind is not None else node.data))
+        # print("%s\t%s" % (id(node), node.name if node.kind is not None else node.data), file=self.output)
         print("%s\t%s%s" % (id(node), node.name,
             ( "" if node.name is node.data else ("="+str(node.data)))
-            ))
+            ), file=self.output)
 
         if len(node.children) > 0:
-            print(id(node), end=" ")
+            print(id(node), end=" ", file=self.output)
             for child in node.children:
-                print(id(child), end=" ")
-            print()
+                print(id(child), end=" ", file=self.output)
+            print(file=self.output)
 
         self.idcount+=1
         # print(type(super()))
@@ -30,8 +31,9 @@ class PrintVisitor(Visitor):
         super().visit(node)
 
 class SymbolVisitor(Visitor):
-    def __init__(self):
+    def __init__(self, file=sys.stderr):
         self.table = SymbolTable()
+        self.output = file
 
     def visit(self, node):
 
@@ -63,7 +65,7 @@ class SymbolVisitor(Visitor):
         elif node.name == "VALUE" or node.name == "IDENTIFIER":
             # Check that the symbol is accessible in this scope
             if type(node.data) is str and self.table.retrieveScope(node.data) is None:
-                print("The symbol %s is not accessible in scope %i" % (node.data, self.table.getCurrentScope()), file=stderr)
+                print("The symbol %s is not accessible in scope %i" % (node.data, self.table.getCurrentScope()), file=self.output)
                 self.table.errors = True
 
         else:
