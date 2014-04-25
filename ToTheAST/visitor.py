@@ -111,18 +111,12 @@ class IntermediateRepresentation(Visitor):
 
 		elif node.name == 'VARIABLE':
 			print("memld RX," + str(node.data))
-			
-		elif node.name == 'TYPE':
-			print("type : ")
 
 		elif node.name == 'BINARYOPEAROR':
 			print("calc RX," + str(node))
 
 		elif node.name == 'IF_ELSE':
 			print("if_else : ")
-
-		elif node.name == "STMS":
-			print("stms : ")
 
 		elif node.name == 'ASSIGN':
 			print("assign : ")
@@ -138,12 +132,6 @@ class IntermediateRepresentation(Visitor):
 
 		elif node.name == 'IF':
 			print("if : ")
-
-		elif node.name == 'CODEBLOCK':
-			print("codeblock : ")
-
-		elif node.name == 'EXPR_BINP':
-			print("expr_binp : ")
 
 		if len(node.children) > 0:
 			node.accept(self)
