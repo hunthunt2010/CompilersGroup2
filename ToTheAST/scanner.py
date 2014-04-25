@@ -11,6 +11,9 @@ from io import StringIO
 
 from visitor import *
 
+# Collects errors into a string
+errors = StringIO()
+
 reserved = {'int' : 'int',
         'const' : 'const',
         'if' : 'if',
@@ -35,6 +38,7 @@ tokens = [
         'int_value',
         'identifier',
     ] + list(reserved.values())
+
 
 t_assign = r'='
 t_comma = r','
@@ -75,8 +79,7 @@ def t_ignore_comment(t):
     pass
 
 def t_error(t):
-    sys.stderr.write("Illegal character (%d): %s\n" % (t.lineno, t))
-    sys.exit(1)
+    print("Illegal character (%d): %s\n" % (t.lineno, t), file=errors)
 
 def p_START(p):
     '''START : STMTS'''
@@ -88,7 +91,6 @@ def p_STMTS(p):
     p[0] = Node("STMTS",  "STMTS")
     p[0].addChild(p[1])
     p[0].adoptChildren(p[2])
-    # print(p[0].showSelf())
 
 def p_EMPTY_STMTS(p):
     'STMTS :'
@@ -222,13 +224,12 @@ def p_MODIFIER(p):
     'MODIFIER : const'
     p[0] = Node("MODIFIER","const")
 
-errors = StringIO()
 
 def p_error(p):
     errors.write("Unknown Token(%d): %s\n" % (p.lineno, p.value))
 
-lex.lex()
-parser = yacc.yacc()
+lex.lex(debug=0)
+parser = yacc.yacc(debug=0)
 
 # use only file names that don't start with '-', since those are commandline arguments, and not files
 files = []
@@ -240,7 +241,11 @@ s = ""
 for line in fileinput.input(files):
     s += line
 
-root = parser.parse(s)
+root = None
+try:
+    root = parser.parse(s)
+except lex.LexError:
+    print("Lex error")
 
 # DEPRICATED. Use the SymbolVisitor instead
 # if '-symtable' in sys.argv:
@@ -273,19 +278,27 @@ else:
     # OUTPUT.p:     raw parse tree like in ToTheAST
     ptfile = open("OUTPUT.p", "w")
     PrintVisitor(file=ptfile).visit(root)
+    ptfile.close()
 
     # OUTPUT.a:     abstract syntax tree that uses arithmetic syntax trees instead
     astfile = open("OUTPUT.a", "w")
     # NOTE: The arithmetic transformer modifies the AST IN-PLACE
     ArithmeticTransformer().visit(root)
     PrintVisitor(file=astfile).visit(root)
+    astfile.close()
 
 
     # OUTPUT.ir:    listing of the courses' IR instructions?
+    # Generate the symbol table
+    symboltable = SymbolVisitor().visit(root)
+
+    # Generate a memory map. Goes from SymEntry -> memorylocation
+    mmap = symboltable.createMemoryMap()
 
     # OUTPUT.err:   list of errors during compilation
     errfile = open("OUTPUT.err", "w")
     print(errors.getvalue(), file=errfile)
+    errfile.close()
 
     # If there are errors, there should be one per line. Counting the number of lines should cound the number of errors
     exit(len(errors.getvalue().split('\n')) - 1)

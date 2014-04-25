@@ -80,3 +80,15 @@ class SymbolTable:
         newSym = SymEntry(name=namespace.addName(name), symtype=symtype, scope=self._scopelevelstack[0], depth=self._depth)
 
         self._symbolHash[name][newSym.scope] = newSym
+
+    def createMemoryMap(self):
+        # SymEntry -> memlocation
+        mmap = {}
+
+        int memloc = 0
+        for var in self._symbolHash:
+            for scope in self._symbolHash[var]
+                mmap[self._symbolHash[var][scope]] = memloc
+                memloc += 1
+
+        return mmap
