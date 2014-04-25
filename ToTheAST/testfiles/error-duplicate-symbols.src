@@ -1,0 +1,9 @@
+
+int x, y = 3, z = x;    
+int A;     
+int B = 0;
+
+A = B / y;
+
+int x = 2;
+

@@ -1,0 +1,17 @@
+
+int x, y = 3, z = x;     
+const int A = 42;     
+int B = 0;
+
+{
+	int B = 2;
+	int y = -1;
+	int A = B / y;
+	{
+		int y = 8;
+		x = 27 << y;
+	}
+}
+
+B = (A + y)/(43*A) + B; 
+

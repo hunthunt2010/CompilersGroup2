@@ -1,0 +1,8 @@
+int x = 3;
+int y;     // happy now patches?
+int z = 0;
+
+y = x + z;
+z = 2;
+
+int A = 2;

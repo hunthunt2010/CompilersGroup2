@@ -1,0 +1,13 @@
+
+int x, y = 3, z = x;
+const int A = 42;     
+int B = 0;
+
+while ( y > 2 + x ) {
+	int B = 2;
+	int y = -1;
+	int Z = A / y;
+}
+
+B = (A + y)/(43*A) + B; 
+

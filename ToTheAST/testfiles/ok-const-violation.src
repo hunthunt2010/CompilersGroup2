@@ -1,0 +1,7 @@
+
+int x, y = 3, z = x;    
+int A;     
+const int B = 0;
+
+A = B / y;
+

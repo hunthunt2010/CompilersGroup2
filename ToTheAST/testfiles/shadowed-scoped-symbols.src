@@ -1,0 +1,15 @@
+
+int x, y = 3, z = x;     // this is a not an error condition on z!
+const int A = 42;     
+int B = 0;
+
+if ( y > 2 + x ) {
+	int B = 2;
+	int y = -1;
+	int A = B / y;
+} else {
+	x = 27 << 2;
+}
+
+B = (A + y)/(43*A) + B; 
+
