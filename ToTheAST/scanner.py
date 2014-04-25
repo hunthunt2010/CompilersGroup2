@@ -255,10 +255,10 @@ except lex.LexError:
     # Node.symToNamespace(symTable)
 
 if '-visit' in sys.argv:
-    visitor.PrintVisitor().visit(root)
+    PrintVisitor().visit(root)
 
 elif '-symvisit' in sys.argv:
-    symtable = visitor.SymbolVisitor().visit(root)
+    symtable = SymbolVisitor().visit(root)
     if symtable.errors:
         print("Symbol table had errors")
         sys.exit(-1)
