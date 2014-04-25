@@ -77,7 +77,7 @@ class SymbolTable:
 
         # print("Making %s at scope=%i, depth=%i" % (name, self._scopelevelstack[-1], self._depth))
         # Use python's global intern to compress string-names into an intern (Same thing as our NameSpace)
-        newSym = SymEntry(name=namespace.addName(name), symtype=symtype, scope=self._scopelevelstack[0], depth=self._depth)
+        newSym = SymEntry(name=self.namespace.addName(name), symtype=symtype, scope=self._scopelevelstack[0], depth=self._depth)
 
         self._symbolHash[name][newSym.scope] = newSym
 
@@ -87,7 +87,7 @@ class SymbolTable:
         memloc = 0
 
         for var in self._symbolHash:
-            for scope in self._symbolHash[var]
+            for scope in self._symbolHash[var]:
                 mmap[self._symbolHash[var][scope]] = memloc
                 memloc += 1
 
