@@ -115,23 +115,32 @@ class IntermediateRepresentation(Visitor):
 		elif node.name == 'BINARYOPEAROR':
 			print("calc RX," + str(node))
 
+		elif node.name == 'IF':
+			print("if : ")
+
+
 		elif node.name == 'IF_ELSE':
 			print("if_else : ")
 
 		elif node.name == 'ASSIGN':
-			print("assign : ")
+			print("calc RX," + str(node.children[1]))
+			print("memst RX,@")
 
 		elif node.name == 'DECL':
-			print("decl : ")
+			if len(node.children) > 2:
+				if node.children[2].name != 'MULTI_ASSIGN':
+					print("calc RX," + str(node.children[2]))
+					print("memst RX,@")
+
+		elif node.name == 'MULTI_ASSIGN':
+			print("calc RD," + str(node.children[1]))
+			print("memst RX,@")
 
 		elif node.name == 'MODIFIER':
 			print("modifier : ")
 
 		elif node.name == 'VARIABLE':
 			print("variable : ")
-
-		elif node.name == 'IF':
-			print("if : ")
 
 		if len(node.children) > 0:
 			node.accept(self)
