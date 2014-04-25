@@ -136,8 +136,6 @@ class IntermediateRepresentation(Visitor):
 			print("calc RX,",node.children[1])
 			i = node.children[0].data
 			j = self.symboltable.retrieveScope(i)
-			print("i : ",i)
-			print("j : ",j)
 			print("memst RX,",self.mmap[j])
 
 		elif node.name == 'DECL':
