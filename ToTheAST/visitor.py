@@ -31,7 +31,7 @@ class PrintVisitor(Visitor):
         super().visit(node)
 
 class SymbolVisitor(Visitor):
-    def __init__(self, file=sys.stderr):
+    def __init__(self, file=stderr):
         self.table = SymbolTable()
         self.output = file
 
@@ -95,10 +95,57 @@ class ArithmeticTransformer(Visitor):
             super().visit(node)
 
 class IntermediateRepresentation(Visitor):
-	
-    def visit(self, node):
+	def __init__(self, file=stderr):
+		self.table = SymbolTable()
+		self.output = file
 
-        if node.name == 'RETURN':
-			print("RETURN : IntermediateRepresentaion")	
+	def visit(self, node):
+		if node.name == 'RETURN':
+			print("return")
+		
+		elif node.name == 'VALUE':
+			print("immld RX," + str( node.data))
 
-        return self.table
+		elif node.name == 'IDENTIFIER':
+			print("identifier : ")
+
+		elif node.name == 'VARIABLE':
+			print("variable : ")
+			
+		elif node.name == 'TYPE':
+			print("type : ")
+
+		elif node.name == 'BINARYOPEAROR':
+			print("binary operator : ")
+
+		elif node.name == 'IF_ELSE':
+			print("if_else : ")
+
+		elif node.name == "STMS":
+			print("stms : ")
+
+		elif node.name == 'ASSIGN':
+			print("assign : ")
+
+		elif node.name == 'DECL':
+			print("decl : ")
+
+		elif node.name == 'MODIFIER':
+			print("modifier : ")
+
+		elif node.name == 'VARIABLE':
+			print("variable : ")
+
+		elif node.name == 'IF':
+			print("if : ")
+
+		elif node.name == 'CODEBLOCK':
+			print("codeblock : ")
+
+		elif node.name == 'EXPR_BINP':
+			print("expr_binp : ")
+
+		if len(node.children) > 0:
+			node.accept(self)
+
+		return self.table
