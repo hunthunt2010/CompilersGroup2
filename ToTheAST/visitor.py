@@ -43,7 +43,7 @@ class SymbolVisitor(Visitor):
             self.table.enterSymbol(node.children[1].data, None)
             super().visit(node)
 
-        elif node.name == 'MULTI_ASSIGN':
+        elif node.name == 'MULTI_ASSIGN' or node.name == 'MULTI':
             self.table.enterSymbol(node.children[0].data, None)
 
             super().visit(node)
