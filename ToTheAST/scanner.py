@@ -298,7 +298,7 @@ else:
 
     # Generate a memory map. Goes from SymEntry -> memorylocation
     mmap = symboltable.createMemoryMap()
-    IntermediateRepresentation(symboltable, mmap, file=irfile, error=errors).visit(root)
+    IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
 
     # OUTPUT.err:   list of errors during compilation
     errfile = open("OUTPUT.err", "w")
