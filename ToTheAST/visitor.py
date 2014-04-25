@@ -146,7 +146,9 @@ class IntermediateRepresentation(Visitor):
 
 		elif node.name == 'MULTI_ASSIGN':
 			print("calc RD,",node.children[1])
-			print("memst RX,@")
+			i = node.children[0].data
+			j = self.symboltable.retrieveScope(i)
+			print("memst RX,",self.mmap[j])
 
 		if len(node.children) > 0:
 			node.accept(self)
