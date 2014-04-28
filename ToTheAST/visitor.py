@@ -91,10 +91,16 @@ class IntermediateRepresentation(Visitor):
                 self.output = file
                 self.mmap = mmap
                 self.symboltable = symboltable
+                self.prgrmCounter = 0
 
         def visit(self, node):
+
+                instructionList = []
+
+
                 if node.name == 'RETURN':
-                        print("return", file=self.output)
+                        #print("return", file=self.output)
+                        instructionList.append('return')
                 
                 # elif node.name == 'VALUE':
                 #       print("immld RX,",node.data)
@@ -110,41 +116,64 @@ class IntermediateRepresentation(Visitor):
 
                 elif node.name == 'IF_ELSE':
                         if len(node.children) > 2:
+                                block = self.visit(node.children[1])
+                                jumpNum = len(block)
                                 if node.children[0].name == 'BINARYOPERATOR':
                                         print("calc RX,",node.children[0], file=self.output)
 
                 elif node.name == 'IF':
                         if len(node.children) > 2:
-                                if node.children[0].name == 'BINARYOPERATOR':
-                                        print("calc RX,",node.children[0], file=self.output)
+                            block = self.visit(node.children[1])
+                            jumpNum = len(block)
+                            if node.children[0].name == 'BINARYOPERATOR':
+                                print("calc RX,",node.children[0], file=self.output)
+                                print("relbfalse %s, RX" % str(jumpNum + 2), file=self.output)
+
+                                for instr in block:
+                                    print(intsr, file=self.output)
 
                 elif node.name == 'WHILE':
                     if len(node.children) > 2:
+                        block = self.visit(node.children[1])
+                        jumpNum = len(block)
                         if node.children[0].name == 'BINARYOPERATOR':
                             print("calc RX,",node.children[0], file=self.output)
+                            print("relbfalse %s, RX" % str(jumpNum + 2), file=self.output)
+
+                            for instr in block:
+                                print(intsr, file=self.output)
+
+                            print("reljump %s" % str((-1 * jumpNum) + 1), file=self.output)
 
                 elif node.name == 'ASSIGN':
-                        print("calc RX,",node.children[1], file=self.output)
+                        #print("calc RX,",node.children[1], file=self.output)
+                        instructionList.append("calc RX, %s" % str(node.children[1]))
                         i = node.children[0].data
                         j = self.symboltable.retrieveScope(i)
-                        print("memst RX,",self.mmap[j], file=self.output)
+                        #print("memst RX,",self.mmap[j], file=self.output)
+                        instructionList.append("memst RX, %s" % str(self.mmap[j]))
 
                 elif node.name == 'DECL':
                         if len(node.children) > 2:
                                 if node.children[2].name != 'MULTI_ASSIGN':
-                                        print("calc RX,",node.children[2], file=self.output)
+                                        #print("calc RX,",node.children[2], file=self.output)
+                                        instructionList.append("calc RX, %s" % str(node.children[2]))
                                         i = node.children[1].data
                                         j = self.symboltable.retrieveScope(i, node.children[1].scope)
-                                        print("memst RX,",self.mmap[j], file=self.output)
+                                        #print("memst RX,",self.mmap[j], file=self.output)
+                                        instructionList.append("memst RX, %s" % str(self.mmap[j]))
 
                 elif node.name == 'MULTI_ASSIGN':
-                        print("calc RD,",node.children[1], file=self.output)
+                        #print("calc RD,",node.children[1], file=self.output)
+                        instructionList.append("calc RD, %s" % str(node.children[1]))
                         i = node.children[0].data
                         j = self.symboltable.retrieveScope(i)
-                        print("memst RX,",self.mmap[j], file=self.output)
+                        #print("memst RX,",self.mmap[j], file=self.output)
+                        instructionList.append("memst RX, %s" % str(self.mmap[j]))
+                else:
+                    instructionList = []
+                    for child in node.children:
+                        instructionList += self.visit(child)
 
-                if len(node.children) > 0:
-                        node.accept(self)
-
-                return self.table
+                return instructionList
 
