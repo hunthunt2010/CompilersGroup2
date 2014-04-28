@@ -32,7 +32,8 @@ class PrintVisitor(Visitor):
 
 class SymbolVisitor(Visitor):
     def __init__(self, file=stderr):
-        self.table = SymbolTable()
+        self.table = SymbolTable(file=file)
+        print("Outputting symbol errors to ", file)
         self.output = file
 
     def visit(self, node):
