@@ -48,23 +48,9 @@ class SymbolVisitor(Visitor):
 
             super().visit(node)
 
-        elif node.name == 'IF_ELSE':
-            node.children[0].accept(self)
-
+        elif node.name == 'CODEBLOCK':
             self.table.openScope()
-            node.children[1].accept(self)
-            self.table.closeScope()
-
-            # Descend on the else-statements
-            self.table.openScope()
-            node.children[2].accept(self)
-            self.table.closeScope()
-
-        elif node.name == 'IF':
-            node.children[0].accept(self)
-
-            self.table.openScope()
-            node.children[1].accept(self)
+            node.accept(self)
             self.table.closeScope()
 
         elif node.name == "VALUE" or node.name == "IDENTIFIER":
@@ -110,14 +96,14 @@ class IntermediateRepresentation(Visitor):
 		if node.name == 'RETURN':
 			print("return")
 		
-		elif node.name == 'VALUE':
-			print("immld RX,",node.data)
+		# elif node.name == 'VALUE':
+		# 	print("immld RX,",node.data)
 
-		elif node.name == 'IDENTIFIER':
-			print("memld RX,",node.data)
+		# elif node.name == 'IDENTIFIER':
+		# 	print("memld RX,",node.data)
 
-		elif node.name == 'VARIABLE':
-			print("memld RX,",node.data)
+		# elif node.name == 'VARIABLE':
+		# 	print("memld RX,",node.data)
 
 		elif node.name == 'BINARYOPEAROR':
 			print("calc RX,",node)

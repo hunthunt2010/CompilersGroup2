@@ -19,6 +19,7 @@ do
     pushd "$2/$file"
         # echo "Parsing $absfile"
         # echo "$parser < $absfile"
+        cp $absfile .
         $parser < $absfile
         cat OUTPUT.p | $graphvis | $dot parsetree.png
         cat OUTPUT.a | $graphvis | $dot arithmetictree.png

@@ -119,6 +119,10 @@ def p_IF_STMT(p):
     p[0].addChild(p[3])
     p[0].addChild(p[5])
 
+def p_BLOCK(p):
+    'STMT : CODEBLOCK'
+    p[0] = Node("BLOCK", "BLOCK")
+    p[0].addChild(p[1])
 
 def p_IF_ELSE_STMT(p):
     'STMT : if lp EXPR rp CODEBLOCK else CODEBLOCK'
@@ -294,11 +298,13 @@ else:
     # OUTPUT.ir:    listing of the courses' IR instructions?
     # Generate the symbol table
     irfile = open("OUTPUT.ir", "w")
-    symboltable = SymbolVisitor().visit(root)
+    symboltable = SymbolVisitor(file=errors).visit(root)
     print(symboltable)
 
     # Generate a memory map. Goes from SymEntry -> memorylocation
     mmap = symboltable.createMemoryMap()
+    for sym in mmap:
+        print("%s: %i" % (symboltable.namespace.getName(sym.name), mmap[sym]))
     print(mmap)
     IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
 
