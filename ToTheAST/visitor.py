@@ -49,7 +49,7 @@ class SymbolVisitor(Visitor):
         return tuple(types)
 
     def visit(self, node):
-        node.scope = self.table.getCurrentScope()
+        node.scopestack = tuple(self.table.getCurrentScopeStack())
 
         if node.name == 'DECL':
             # DECL is the important one for processing variable instantion
@@ -90,7 +90,6 @@ class SymbolVisitor(Visitor):
             if type(node.data) is str and self.table.retrieveScope(node.data) is None:
                 print("The symbol %s is not accessible in scope %i" % (node.data, self.table.getCurrentScope()), file=self.output)
                 self.table.errors = True
-
         else:
             node.accept(self)
 
@@ -178,7 +177,7 @@ class IntermediateRepresentation(Visitor):
                     #print("calc RX,",node.children[1], file=self.output)
                     instructionList.append("calc RX, %s" % str(node.children[1]))
                     i = node.children[0].data
-                    j = self.symboltable.retrieveScope(i)
+                    j = self.symboltable.retrieveScope(i, stack=node.children[0].scopestack)
                     #print("memst RX,",self.mmap[j], file=self.output)
                     instructionList.append("memst RX, %s" % str(self.mmap[j]))
 
@@ -188,10 +187,10 @@ class IntermediateRepresentation(Visitor):
                             #print("calc RX,",node.children[2], file=self.output)
                             instructionList.append("calc RX, %s" % str(node.children[2]))
                             i = node.children[1].data
-                            j = self.symboltable.retrieveScope(i, node.children[1].scope)
+                            j = self.symboltable.retrieveScope(i, stack=node.children[1].scopestack)
                             #print("memst RX,",self.mmap[j], file=self.output)
                             instructionList.append("memst RX, %s" % str(self.mmap[j]))
-                        elsegi:
+                        else:
                             instructionList += self.visit(node.children[2])
 
                 elif node.name == 'MULTI_ASSIGN':

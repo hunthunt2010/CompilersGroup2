@@ -20,7 +20,7 @@ class Node:
 
         # Scope is set by the SymbolVisitor, later on.
         # Until changed, assume that all nodes are in global scope
-        self.scope = 0
+        self.scopestack = [0]
 
     def addChild(self, newChild):
         if newChild is not None:

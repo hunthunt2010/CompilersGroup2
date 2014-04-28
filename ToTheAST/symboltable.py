@@ -32,6 +32,9 @@ class SymbolTable:
             for scope in self._symbolHash[name]:
                 print("\t\t%i: %s" % (scope, str(self._symbolHash[name][scope])), file=file)
 
+    def getCurrentScopeStack(self):
+        return self._scopelevelstack
+
     def getCurrentScope(self):
         return self._scopelevelstack[0]
 
@@ -51,9 +54,12 @@ class SymbolTable:
 
         self._scopelevelstack.pop(0)
 
-    def retrieveScope(self, symbol, level=-1):
+    def retrieveScope(self, symbol, level=-1, stack=None):
         '''Returns the symbol-table entry for the symbol at the specified level.
            If no level is specified, then the inner-most level is used'''
+        if stack is None:
+            stack = self._scopelevelstack
+
         if symbol not in self._symbolHash:
             return None
 
@@ -64,7 +70,7 @@ class SymbolTable:
                 return self._symbolHash[symbol][level]
         else:
             # level == -1. Return the inner-most entry
-            for scope in self._scopelevelstack:
+            for scope in stack:
                 # print("Checking for %s in scope %i" % (symbol, scope))
                 if scope in self._symbolHash[symbol]:
                     # print("Returning", self._symbolHash[symbol][scope])
