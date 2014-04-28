@@ -44,6 +44,8 @@ class SymbolVisitor(Visitor):
                 for child in node.children:
                     if child.data is not None:
                         types.append(child.data)
+            else:
+                types.append(node.data)
         return tuple(types)
 
     def visit(self, node):
