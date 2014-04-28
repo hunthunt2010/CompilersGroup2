@@ -8,7 +8,7 @@ from sys import intern, stderr
 from namespace import Namespace
 
 class SymbolTable:
-    def __init__(self):
+    def __init__(self, file=stderr):
         # Contains scope-depth. this is different from scope level, because
         # the scopes are uniquely defined, while depths are often the same
         self._depth = 0
@@ -19,7 +19,9 @@ class SymbolTable:
         # Current depth is stored as _scopelevelstack[-1]
         self._scopelevelstack=[0]
         self._allscopes=[0]
+
         self.errors = False
+        self.output = file
 
         # Namespace instance for symbol table
         self.namespace = Namespace()
@@ -72,7 +74,7 @@ class SymbolTable:
         if name in self._symbolHash:
             if self._scopelevelstack[0] in self._symbolHash[name]:
                 # This variable was previously defined for the scope
-                print("Variable %s was already defined in scope %i" % (name, self._scopelevelstack[0]) , file=stderr)
+                print("Variable %s was already defined in scope %i" % (name, self._scopelevelstack[0]) , file=self.output)
                 self.errors = True
 
         # print("Making %s at scope=%i, depth=%i" % (name, self._scopelevelstack[-1], self._depth))

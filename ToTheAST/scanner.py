@@ -24,7 +24,7 @@ reserved = {'int' : 'int',
 
 tokens = [
         'assign',
-        'semi', 
+        'semi',
         'comma',
         'lp', 'rp',
         'lb', 'rb',
@@ -34,8 +34,10 @@ tokens = [
         'multiply',
         'lessequal',
         'lessthan',
+        'doubleequal',
         'greaterthan',
         'divide',
+        'modulus',
         'int_value',
         'identifier',
     ] + list(reserved.values())
@@ -49,12 +51,14 @@ t_lb = r'{'
 t_rb = r'}'
 t_leftshift = r'<<'
 t_lessequal = r'<='
+t_doubleequal = r'=='
 t_lessthan = r'<'
 t_greaterthan = r'>'
 t_plus = r'\+'
 t_minus = r'-'
 t_multiply = r'\*'
 t_divide = r'/'
+t_modulus = r'%'
 t_semi = r';'
 t_ignore = " \t"
 
@@ -197,8 +201,10 @@ def p_BINARYOPERATOR(p):
                       | minus
                       | multiply
                       | divide
+                      | modulus
                       | lessthan
                       | greaterthan
+                      | doubleequal
                       | lessequal'''
     p[0] = Node("BINARYOPERATOR", p[1])
 
