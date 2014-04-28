@@ -183,14 +183,16 @@ class IntermediateRepresentation(Visitor):
                     instructionList.append("memst RX, %s" % str(self.mmap[j]))
 
                 elif node.name == 'DECL':
-                    if len(node.children) > 2 and node.children[2].name != 'MULTI_ASSIGN':
-                        #print("calc RX,",node.children[2], file=self.output)
-                        instructionList.append("calc RX, %s" % str(node.children[2]))
-                        i = node.children[1].data
-                        j = self.symboltable.retrieveScope(i, node.children[1].scope)
-                        #print("memst RX,",self.mmap[j], file=self.output)
-                        instructionList.append("memst RX, %s" % str(self.mmap[j]))
-                    super().visit(node)
+                    if len(node.children) > 2:
+                        if node.children[2].name != 'MULTI_ASSIGN':
+                            #print("calc RX,",node.children[2], file=self.output)
+                            instructionList.append("calc RX, %s" % str(node.children[2]))
+                            i = node.children[1].data
+                            j = self.symboltable.retrieveScope(i, node.children[1].scope)
+                            #print("memst RX,",self.mmap[j], file=self.output)
+                            instructionList.append("memst RX, %s" % str(self.mmap[j]))
+                        elsegi:
+                            instructionList += self.visit(node.children[2])
 
                 elif node.name == 'MULTI_ASSIGN':
                     #print("calc RD,",node.children[1], file=self.output)
@@ -199,7 +201,8 @@ class IntermediateRepresentation(Visitor):
                     j = self.symboltable.retrieveScope(i)
                     #print("memst RX,",self.mmap[j], file=self.output)
                     instructionList.append("memst RX, %s" % str(self.mmap[j]))
-                    super().visit(node)
+                    if len(node.children) > 2 and node.children[2].name == 'MULTI_ASSIGN':
+                        instructionList += self.visit(node.children[2])
 
                 elif node.name == 'START' :
                     instructionList = []
