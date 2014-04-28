@@ -2,18 +2,30 @@ ToTheAST
 
 0xF77843
 ------------------
-Christopher Copper
+# Christopher Copper
+# Ezekiel Chopper
+
 David Hunter
-Ezekiel Chopper
 Philip Eittreim
 Taylor Schmidt
+Matt Buland
+Maria Deslis
 
 How To Run
 ----------
-./scanner.py < file > output
-./scanner.py file > output
-python scanner < file > output
-python scanner file > output
+./scanner.py < file
+./scanner.py file
+python scanner < file
+python scanner file
+
+How To Use the Automated Test Suite
+-----------------------------------
+./testoutput.bash testfiledir outputdir
+
+testfiledir is expected to be a directory that contains source files
+outputdir is NOT expected to exist. it will be created if it does not exist
+    outputdir will be populated with one directory per input file, which will be
+        used as the execution directory for the source file
 
 Usage
 -----
