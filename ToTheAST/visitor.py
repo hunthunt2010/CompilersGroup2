@@ -191,7 +191,7 @@ class IntermediateRepresentation(Visitor):
                             j = self.symboltable.retrieveScope(i, node.children[1].scope)
                             #print("memst RX,",self.mmap[j], file=self.output)
                             instructionList.append("memst RX, %s" % str(self.mmap[j]))
-                        else:
+                        elsegi:
                             instructionList += self.visit(node.children[2])
 
                 elif node.name == 'MULTI_ASSIGN':
