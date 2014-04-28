@@ -19,6 +19,7 @@ reserved = {'int' : 'int',
         'if' : 'if',
         'else' : 'else',
         'return' : 'return',
+        'while' : 'while',
         }
 
 tokens = [
@@ -158,6 +159,12 @@ def p_MULTI_ASSIGN(p):
     p[0] = Node("MULTI_ASSIGN" , "MULTI_ASSIGN" )
     p[0].addChild(p[2])
     p[0].addChild(p[4])
+    p[0].addChild(p[5])
+
+def p_WHILE_STMT(p):
+    'STMT : while lp EXPR rp CODEBLOCK'
+    p[0] = Node("WHILE", "WHILE")
+    p[0].addChild(p[3])
     p[0].addChild(p[5])
 
 def p_MULTI_LAMBDA(p):
