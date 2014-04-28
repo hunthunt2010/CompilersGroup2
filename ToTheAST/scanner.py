@@ -304,8 +304,8 @@ else:
     # Generate a memory map. Goes from SymEntry -> memorylocation
     mmap = symboltable.createMemoryMap()
     for sym in mmap:
-        print("%s: %i" % (symboltable.namespace.getName(sym.name), mmap[sym]))
-    print(mmap)
+        print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]))
+    # print(mmap)
     IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
 
     # OUTPUT.err:   list of errors during compilation
