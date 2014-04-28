@@ -105,17 +105,17 @@ class IntermediateRepresentation(Visitor):
 		# elif node.name == 'VARIABLE':
 		# 	print("memld RX,",node.data)
 
-		# elif node.name == 'BINARYOPEAROR':
+		# elif node.name == 'BINARYOPERATOR':
 		# 	print("calc RX,", node, file=self.output)
 
 		elif node.name == 'IF_ELSE':
 			if len(node.children) > 2:
-				if node.children[0].name == 'BINARYOPEAROR':
+				if node.children[0].name == 'BINARYOPERATOR':
 					print("calc RX,",node.children[0], file=self.output)
 
 		elif node.name == 'IF':
 			if len(node.children) > 2:
-				if node.children[0].name == 'BINARYOPEAROR':
+				if node.children[0].name == 'BINARYOPERATOR':
 					print("calc RX,",node.children[0], file=self.output)
 
 		elif node.name == 'ASSIGN':

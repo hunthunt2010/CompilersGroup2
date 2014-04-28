@@ -193,7 +193,7 @@ def p_BINARYOPERATOR(p):
                       | lessthan
                       | greaterthan
                       | lessequal'''
-    p[0] = Node("BINARYOPEAROR", p[1])
+    p[0] = Node("BINARYOPERATOR", p[1])
 
 def p_RETURN(p):
     'RETURN : return'
