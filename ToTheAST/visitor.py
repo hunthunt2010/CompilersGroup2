@@ -33,20 +33,34 @@ class PrintVisitor(Visitor):
 class SymbolVisitor(Visitor):
     def __init__(self, file=stderr):
         self.table = SymbolTable(file=file)
-        print("Outputting symbol errors to ", file)
         self.output = file
+
+    @staticmethod
+    def toTypeList(node):
+        types = []
+        if node.name == 'TYPE':
+            # could have a modifier AND a type
+            if len(node.children) > 0:
+                for child in node.children:
+                    if child.data is not None:
+                        types.append(child.data)
+        return tuple(types)
 
     def visit(self, node):
         node.scope = self.table.getCurrentScope()
 
         if node.name == 'DECL':
             # DECL is the important one for processing variable instantion
-            self.table.enterSymbol(node.children[1].data, None)
+            typelist = self.toTypeList(node.children[0])
+            self.table.enterSymbol(node.children[1].data, typelist)
+            node.typelist = typelist
             super().visit(node)
 
         elif node.name == 'MULTI_ASSIGN' or node.name == 'MULTI':
-            self.table.enterSymbol(node.children[0].data, None)
-
+            typelist = node.parent.typelist
+            # typelist = self.toTypeList(node.children[0])
+            self.table.enterSymbol(node.children[0].data, typelist)
+            node.typelist = typelist
             super().visit(node)
 
         elif node.name == 'CODEBLOCK':
@@ -54,8 +68,23 @@ class SymbolVisitor(Visitor):
             node.accept(self)
             self.table.closeScope()
 
+        elif node.name == 'ASSIGN':
+            # Check for const correctness
+            # is node.data writable?
+            syme = self.table.retrieveScope(node.children[0].data)
+            if syme is None:
+                # This error will be caught when the recursion to VALUE is found
+                pass
+            else:
+                if 'const' in syme.symtype:
+                    # You cannot change that!!!
+                    print("Symbol %s cannot be assigned in scope %i" % (node.children[0].data, self.table.getCurrentScope()), file=self.output)
+                    self.table.errors = True
+            node.accept(self)
+
+
         elif node.name == "VALUE" or node.name == "IDENTIFIER":
-            # Check that the symbol is accessible in this scope
+            # Check that the symbol is accessible in this scope, including const correctness
             if type(node.data) is str and self.table.retrieveScope(node.data) is None:
                 print("The symbol %s is not accessible in scope %i" % (node.data, self.table.getCurrentScope()), file=self.output)
                 self.table.errors = True
