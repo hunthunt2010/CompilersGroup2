@@ -86,7 +86,7 @@ class ArithmeticTransformer(Visitor):
             super().visit(node)
 
 class IntermediateRepresentation(Visitor):
-	def __init__(self, symboltable, mmap, file=stderr):
+	def __init__(self, symboltable, mmap, file=stdout):
 		self.table = SymbolTable()
 		self.output = file
 		self.mmap = mmap
@@ -94,7 +94,7 @@ class IntermediateRepresentation(Visitor):
 
 	def visit(self, node):
 		if node.name == 'RETURN':
-			print("return")
+			print("return", file=self.output)
 		
 		# elif node.name == 'VALUE':
 		# 	print("immld RX,",node.data)
@@ -105,38 +105,38 @@ class IntermediateRepresentation(Visitor):
 		# elif node.name == 'VARIABLE':
 		# 	print("memld RX,",node.data)
 
-		elif node.name == 'BINARYOPEAROR':
-			print("calc RX,",node)
+		# elif node.name == 'BINARYOPEAROR':
+		# 	print("calc RX,", node, file=self.output)
 
 		elif node.name == 'IF_ELSE':
 			if len(node.children) > 2:
 				if node.children[0].name == 'BINARYOPEAROR':
-					print("calc RX,",node.children[0])
+					print("calc RX,",node.children[0], file=self.output)
 
 		elif node.name == 'IF':
 			if len(node.children) > 2:
 				if node.children[0].name == 'BINARYOPEAROR':
-					print("calc RX,",node.children[0])
+					print("calc RX,",node.children[0], file=self.output)
 
 		elif node.name == 'ASSIGN':
-			print("calc RX,",node.children[1])
+			print("calc RX,",node.children[1], file=self.output)
 			i = node.children[0].data
 			j = self.symboltable.retrieveScope(i)
-			print("memst RX,",self.mmap[j])
+			print("memst RX,",self.mmap[j], file=self.output)
 
 		elif node.name == 'DECL':
 			if len(node.children) > 2:
 				if node.children[2].name != 'MULTI_ASSIGN':
-					print("calc RX,",node.children[2])
+					print("calc RX,",node.children[2], file=self.output)
 					i = node.children[1].data
 					j = self.symboltable.retrieveScope(i)
-					print("memst RX,",self.mmap[j])
+					print("memst RX,",self.mmap[j], file=self.output)
 
 		elif node.name == 'MULTI_ASSIGN':
-			print("calc RD,",node.children[1])
+			print("calc RD,",node.children[1], file=self.output)
 			i = node.children[0].data
 			j = self.symboltable.retrieveScope(i)
-			print("memst RX,",self.mmap[j])
+			print("memst RX,",self.mmap[j], file=self.output)
 
 		if len(node.children) > 0:
 			node.accept(self)
