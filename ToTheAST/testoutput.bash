@@ -16,7 +16,7 @@ for file in $(ls $1)
 do
     absfile="$PWD/$1/$file"
     if [ ! -d "$2/$file" ]; then mkdir "$2/$file"; fi
-    pushd "$2/$file"
+    pushd "$2/$file" > /dev/null
         # echo "Parsing $absfile"
         # echo "$parser < $absfile"
         cp $absfile .
@@ -24,6 +24,5 @@ do
         cat OUTPUT.p | $graphvis | $dot parsetree.png
         cat OUTPUT.a | $graphvis | $dot arithmetictree.png
         # echo "Done parsing"
-    popd
-    echo ""
+    popd > /dev/null
 done

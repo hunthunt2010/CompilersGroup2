@@ -312,14 +312,19 @@ else:
     # Generate the symbol table
     irfile = open("OUTPUT.ir", "w")
     symboltable = SymbolVisitor(file=errors).visit(root)
-    print(symboltable)
+
+    symfile = open("OUTPUT.sym", "w")
+    symboltable.prettyprint(file=symfile)
+    symfile.close()
 
     # Generate a memory map. Goes from SymEntry -> memorylocation
+    mmapfile = open("OUTPUT.mmap", "w")
     mmap = symboltable.createMemoryMap()
     for sym in mmap:
-        print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]))
-    # print(mmap)
+        print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]), file=mmapfile)
+    mmapfile.close()
     IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
+    irfile.close()
 
     # OUTPUT.err:   list of errors during compilation
     errfile = open("OUTPUT.err", "w")

@@ -3,7 +3,7 @@ from collections import namedtuple
 SymEntry = namedtuple('SymEntry', ['name', 'symtype', 'scope', 'depth'])
 
 # Exists as a built-in for Python2, but was put in sys for python 3
-from sys import intern, stderr
+from sys import intern, stderr, stdout
 
 from namespace import Namespace
 
@@ -25,6 +25,12 @@ class SymbolTable:
 
         # Namespace instance for symbol table
         self.namespace = Namespace()
+
+    def prettyprint(self, file=stdout):
+        for name in self._symbolHash:
+            print("%s:" % name, end='', file=file)
+            for scope in self._symbolHash[name]:
+                print("\t\t%i: %s" % (scope, str(self._symbolHash[name][scope])), file=file)
 
     def getCurrentScope(self):
         return self._scopelevelstack[0]
