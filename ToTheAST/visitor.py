@@ -118,6 +118,11 @@ class IntermediateRepresentation(Visitor):
                                 if node.children[0].name == 'BINARYOPERATOR':
                                         print("calc RX,",node.children[0], file=self.output)
 
+                elif node.name == 'WHILE':
+                    if len(node.children) > 2:
+                        if node.children[0].name == 'BINARYOPERATOR':
+                            print("calc RX,",node.children[0], file=self.output)
+
                 elif node.name == 'ASSIGN':
                         print("calc RX,",node.children[1], file=self.output)
                         i = node.children[0].data
@@ -142,3 +147,4 @@ class IntermediateRepresentation(Visitor):
                         node.accept(self)
 
                 return self.table
+
