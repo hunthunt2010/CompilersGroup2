@@ -15,6 +15,9 @@ class Node:
         self.children = []
         self.parent = None
 
+        # populated later with type semantics to be used by recursing instantiations
+        self.typelist = []
+
         # Scope is set by the SymbolVisitor, later on.
         # Until changed, assume that all nodes are in global scope
         self.scope = 0

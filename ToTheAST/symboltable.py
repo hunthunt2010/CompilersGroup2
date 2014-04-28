@@ -68,6 +68,9 @@ class SymbolTable:
 
     # TODO: Type??
     def enterSymbol(self, name, symtype):
+        if symtype is None:
+            print("Trying to enter %s with a NONE symtype" % name, file=stderr)
+
         if name not in self._symbolHash:
             self._symbolHash[name] = {}
 
