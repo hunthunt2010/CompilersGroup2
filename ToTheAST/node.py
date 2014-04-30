@@ -22,6 +22,9 @@ class Node:
         # Until changed, assume that all nodes are in global scope
         self.scopestack = [0]
 
+        # Populated by Sethi Ullman visitor
+        self.regCount = None
+
     def addChild(self, newChild):
         if newChild is not None:
             self.children.append(newChild)

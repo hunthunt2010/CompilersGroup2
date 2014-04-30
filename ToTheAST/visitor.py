@@ -100,18 +100,18 @@ class ArithmeticTransformer(Visitor):
     def visit(self, node):
         # print("Visiting node: %s" % node.showSelf())
         if node.name == 'EXPR_BINOP':
+            super().visit(node)
+
             node.name = node.children[1].name
             node.data = node.children[1].data
-
             node.children.pop(1)
-            super().visit(node)
 
         elif node.name == 'EXPR':
+            super().visit(node)
+
             node.name = node.children[0].name
             node.data = node.children[0].data
-
-            node.children = []
-            super().visit(node)
+            node.children = node.children[0].children
 
         else:
             super().visit(node)
@@ -217,3 +217,57 @@ class IntermediateRepresentation(Visitor):
 
                 return instructionList
 
+class PrintWithStrahlerNumber(Visitor):
+    def __init__(self, file=stdout):
+        self.idcount = 0
+        self.output = file
+
+    def prettyChildren(self, node):
+        return "%s" % (id(node))
+
+    def visit(self, node):
+        # print("%s\t%s" % (id(node), node.name if node.kind is not None else node.data), file=self.output)
+        print("%s\t%s%s%s"
+            % (
+                  id(node)
+                , node.name
+                , ( "" if node.name is node.data else ("="+str(node.data)))
+                , ( "" if node.name not in ["BINARYOPERATOR", "VALUE", "IDENTIFIER"] or node.regCount is None else "(%i)" % node.regCount )
+            ), file=self.output)
+
+        if len(node.children) > 0:
+            print(id(node), end=" ", file=self.output)
+            for child in node.children:
+                print(id(child), end=" ", file=self.output)
+            print(file=self.output)
+
+        self.idcount+=1
+        # print(type(super()))
+
+        super().visit(node)
+
+
+# Sethi Ullman register needs algorithm
+class RegisterNeedsVisitor(Visitor):
+
+    # Travels to all the arithmetic syntax parts, and decorates them with
+    #   register needs
+    def visit(self, node):
+        if node.name == 'BINARYOPERATOR':
+            if len(node.children) is 0:
+                node.regCount = 0
+            else:
+                print("%s -> %s(%s) : %s(%s)" % (node.name, node.children[0].name, node.children[0].regCount, node.children[1].name, node.children[1].regCount))
+                self.visit(node.children[0])
+                self.visit(node.children[1])
+                print("%s -> %s(%s) : %s(%s)" % (node.name, node.children[0].name, node.children[0].regCount, node.children[1].name, node.children[1].regCount))
+
+                if node.children[0].regCount == node.children[1].regCount:
+                    node.regCount = node.children[1].regCount + 1
+                else:
+                    node.regCount = max(node.children[0].regCount, node.children[1].regCount)
+        elif (node.name == 'IDENTIFIER' or node.name == 'VALUE') and node.parent.name in ['BINARYOPERATOR', 'EXPR', 'EXPR_BINOP']:
+            node.regCount = 1
+        else:
+            # Recurse down to all the binaryoperator nodes
+            super().visit(node)

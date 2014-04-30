@@ -304,7 +304,11 @@ else:
     astfile = open("OUTPUT.a", "w")
     # NOTE: The arithmetic transformer modifies the AST IN-PLACE
     ArithmeticTransformer().visit(root)
-    PrintVisitor(file=astfile).visit(root)
+    # PrintVisitor(file=astfile).visit(root)
+
+    # Test out the Sethi Ullman algorithm to show register requirements
+    RegisterNeedsVisitor().visit(root)
+    PrintWithStrahlerNumber(file=astfile).visit(root)
     astfile.close()
 
 
