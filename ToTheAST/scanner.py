@@ -322,11 +322,12 @@ else:
     symfile.close()
 
     # Generate a memory map. Goes from SymEntry -> memorylocation
-    mmapfile = open("OUTPUT.mmap", "w")
+    # mmapfile = open("OUTPUT.mmap", "w")
+    # Returns a memory map that has the globals allocated, and can dynamically allocate variables
     mmap = symboltable.createMemoryMap()
-    for sym in mmap:
-        print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]), file=mmapfile)
-    mmapfile.close()
+    # for sym in mmap:
+    #     print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]), file=mmapfile)
+    # mmapfile.close()
     IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
     irfile.close()
 

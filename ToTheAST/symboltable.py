@@ -99,13 +99,26 @@ class SymbolTable:
         self._symbolHash[name][newSym.scope] = newSym
 
     def createMemoryMap(self):
+        # Makes a default memory map that has globals allocated
+        return MemoryMap(self)
+
+class MemoryMap:
+    def __init__(self, symbolTable):
+        self.symtable = symbolTable
+
         # SymEntry -> memlocation
-        mmap = {}
-        memloc = 20000
+        self._mmap = {}
 
-        for var in self._symbolHash:
-            for scope in self._symbolHash[var]:
-                mmap[self._symbolHash[var][scope]] = memloc
-                memloc += 8
+        # Starting location of memory after instructions and data
+        memptr = 20000
 
-        return mmap
+        # Allocate globals
+        for var in self.symtable._symbolHash:
+            #for scope in self._symbolHash[var]:
+            if 0 in self.symtable._symbolHash[var]:
+                self._mmap[self.symtable._symbolHash[var][0]] = memloc
+                self.incrementMemptr()
+
+    def incrementMemptr(self, n=1):
+        # Hardcoded memory location size: 8 bytes
+        self.memptr += (8*n)
