@@ -9,6 +9,15 @@ class Register:
 	def __str__(self):
 		return "name: " + self.name + " Memory: " + str(self.memory) + " allocated: " + str(self.assigned)
 
+	def isMoreOptimal(self, reg):
+		if (self.memory is None) and (reg.memory is not None):
+			return True
+		elif (self.memory is not None) and (reg.memory is None):
+			return False
+		elif self.name < reg.name:
+			return True
+		else:
+			return False
 
 class RegisterTracker:
 	def __init__(self):
@@ -70,6 +79,19 @@ class RegisterTracker:
 			raise Exception('NOTHING VIRTUAL LEFT TO DEALLOCATE!!!!')
 		else:
 			self.sp += (numToFree * 8)
+
+	def freeOneRegister(self, reg):
+		if (reg.memory is None):
+			for i in range(0, len(allocRegList)):
+				if reg.name == allocRegList[i].name:
+					freeAllocReg(reg.name)
+					return
+			for i in range(0, len(workRegList))
+				if reg.name == workRegList[i].name:
+					freeWorkReg(reg.name)
+					return
+		else:
+			freeVirtualReg(1)
 
 
 

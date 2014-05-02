@@ -1,5 +1,6 @@
 from symboltable import SymbolTable
 from sys import stderr,stdout
+from register import *
 
 class Visitor:
     def visit(self, node):
@@ -285,3 +286,24 @@ class RegisterNeedsVisitor(Visitor):
         else:
             # Recurse down to all the binaryoperator nodes
             super().visit(node)
+
+class RegAllocationVisitor(Visitor):
+    def __init__(self):
+        self.tracker = RegisterTracker()
+
+
+    def visit(self, node):
+        if len(node.children) == 0:
+            node.register = tracker.getAllocReg()
+        else:
+            if (node.children[0].register.isMoreOptimal(node.children[1].register)):
+                self.tracker.freeOneRegister(node.children[1].register)
+                node.register = node.children[0].register
+            else:
+                self.tracker.freeOneRegister(node.children[0].register)
+                node.register = node.children[1].register
+
+            self.visit(node.children[1] if node.children[0].regCount > node.children[1].regCount else\
+                       node.children[0])
+
+
