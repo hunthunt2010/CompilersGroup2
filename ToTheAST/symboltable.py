@@ -110,15 +110,40 @@ class MemoryMap:
         self._mmap = {}
 
         # Starting location of memory after instructions and data
-        memptr = 20000
+        self.memptr = 20000
 
         # Allocate globals
         for var in self.symtable._symbolHash:
             #for scope in self._symbolHash[var]:
             if 0 in self.symtable._symbolHash[var]:
-                self._mmap[self.symtable._symbolHash[var][0]] = memloc
+                self._mmap[self.symtable._symbolHash[var][0]] = self.memptr
                 self.incrementMemptr()
 
     def incrementMemptr(self, n=1):
         # Hardcoded memory location size: 8 bytes
         self.memptr += (8*n)
+
+	def decrementMemptr(self, n=1):
+		self.memptr -= (8*n)
+
+	def allocateScope(self, listSymEnt):
+		"Allocates local variables for a scope"
+		for var in listSymEnt:
+			self._mmap[var] = self.memptr
+			self.incrementMemptr()
+
+	def lookUpVar(self, nameVar, scopeVar):
+		'''Given the name and scope of a variable, return the mem location that it resides in or none if mem location is not allocated '''	
+			symEntry = self.symtable._symbolHash[nameVar][scopeVar]
+
+			if symEntry in  self._mmap:
+				return self._mmap[symEntry]			
+			else
+				return None
+
+	def freeScope(self, scopeVar):
+		"Frees scope from local variables"
+		for mappedVar in self._mmap:
+			if mappedVar.scope == scopeVar:
+				del self._mmap[mappedVar] 
+				self.decrementMemptr()
