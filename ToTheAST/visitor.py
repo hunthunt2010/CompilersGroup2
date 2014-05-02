@@ -250,12 +250,13 @@ class PrintWithStrahlerNumber(Visitor):
 
     def visit(self, node):
         # print("%s\t%s" % (id(node), node.name if node.kind is not None else node.data), file=self.output)
-        print("%s\t%s%s%s"
+        print("%s\t%s%s%s%s"
             % (
                   id(node)
                 , node.name
                 , ( "" if node.name is node.data else ("="+str(node.data)))
                 , ( "" if node.name not in ["BINARYOPERATOR", "VALUE", "IDENTIFIER"] or node.regCount is None else "(%i)" % node.regCount )
+                , ( "" if node.register is None else " <" + (node.register.name if node.register.memory is None else str(node.register.memory)) + ">")
             ), file=self.output)
 
         if len(node.children) > 0:
@@ -295,23 +296,35 @@ class RegisterNeedsVisitor(Visitor):
             # Recurse down to all the binaryoperator nodes
             super().visit(node)
 
+
 class RegAllocationVisitor(Visitor):
+
     def __init__(self):
         self.tracker = RegisterTracker()
 
 
     def visit(self, node):
-        if len(node.children) == 0:
-            node.register = tracker.getAllocReg()
+        if node.name == 'BINARYOPERATOR' and node.parent.name != 'BINARYOPERATOR':
+            self.internalVisit(node)
         else:
+            super().visit(node)
+
+
+    def internalVisit(self, node):
+        if node.name == 'BINARYOPERATOR':
+            self.internalVisit(node.children[0] if node.children[0].regCount > node.children[1].regCount else\
+                                   node.children[1])
+            self.internalVisit(node.children[0] if node.children[0].regCount <= node.children[1].regCount else\
+                                   node.children[1])
             if (node.children[0].register.isMoreOptimal(node.children[1].register)):
                 self.tracker.freeOneRegister(node.children[1].register)
                 node.register = node.children[0].register
             else:
                 self.tracker.freeOneRegister(node.children[0].register)
                 node.register = node.children[1].register
+        elif (node.name == 'IDENTIFIER' or node.name == 'VALUE'):
+            node.register = self.tracker.getReg()
 
-            self.visit(node.children[1] if node.children[0].regCount > node.children[1].regCount else\
-                       node.children[0])
+
 
 

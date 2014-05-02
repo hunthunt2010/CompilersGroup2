@@ -10,6 +10,8 @@ class Register:
 		return "name: " + self.name + " Memory: " + str(self.memory) + " allocated: " + str(self.assigned)
 
 	def isMoreOptimal(self, reg):
+		if (reg is None):
+			return False
 		if (self.memory is None) and (reg.memory is not None):
 			return True
 		elif (self.memory is not None) and (reg.memory is None):
@@ -82,16 +84,16 @@ class RegisterTracker:
 
 	def freeOneRegister(self, reg):
 		if (reg.memory is None):
-			for i in range(0, len(allocRegList)):
-				if reg.name == allocRegList[i].name:
-					freeAllocReg(reg.name)
+			for i in range(0, len(self.allocRegList)):
+				if reg.name == self.allocRegList[i].name:
+					self.freeAllocReg(reg.name)
 					return
-			for i in range(0, len(workRegList))
-				if reg.name == workRegList[i].name:
-					freeWorkReg(reg.name)
+			for i in range(0, len(self.workRegList)):
+				if reg.name == self.workRegList[i].name:
+					self.freeWorkReg(reg.name)
 					return
 		else:
-			freeVirtualReg(1)
+			self.freeVirtualReg(1)
 
 
 

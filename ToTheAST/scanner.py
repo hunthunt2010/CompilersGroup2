@@ -308,6 +308,7 @@ else:
 
     # Test out the Sethi Ullman algorithm to show register requirements
     RegisterNeedsVisitor().visit(root)
+    RegAllocationVisitor().visit(root)
     PrintWithStrahlerNumber(file=astfile).visit(root)
     astfile.close()
 
@@ -328,7 +329,7 @@ else:
     # for sym in mmap:
     #     print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]), file=mmapfile)
     # mmapfile.close()
-    IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
+#    IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
     irfile.close()
 
     # OUTPUT.err:   list of errors during compilation
