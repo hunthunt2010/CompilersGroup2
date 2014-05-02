@@ -139,7 +139,8 @@ class MemoryMap:
 				return None
 
 	def freeScope(self, scopeVar):
+		"Frees scope from local variables"
 		for mappedVar in self._mmap:
 			if mappedVar.scope == scopeVar:
-				self._mmap[mappedVar] = None
+				del self._mmap[mappedVar] 
 
