@@ -126,9 +126,9 @@ class MemoryMap:
 	def allocateScope(self, listSymEnt):
 		"Allocates local variables for a scope"
 		for var in listSymEnt:
-			#SymEntry = namedtuple('SymEntry', ['name', 'symtype', 'scope', 'depth'])
-			var.name
-	
+			self._mmap[var] = self.memptr
+			self.incrementMemptr()
+
 	def lookUpVar(self, nameVar, scopeVar):
 		'''Given the name and scope of a variable, return the mem location that it resides in or none if mem location is not allocated '''	
 			symEntry = self.symtable._symbolHash[nameVar][scopeVar]
@@ -138,8 +138,8 @@ class MemoryMap:
 			else
 				return None
 
-	def freeScope(self, ):
-			
-
-				
+	def freeScope(self, scopeVar):
+		for mappedVar in self._mmap:
+			if mappedVar.scope == scopeVar:
+				self._mmap[mappedVar] = None
 
