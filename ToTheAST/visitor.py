@@ -198,6 +198,9 @@ class IntermediateRepresentation(Visitor):
                             instructionList += self.visit(node.children[2])
 
                 elif node.name == 'MULTI_ASSIGN':
+					declVarScope = self.symboltable.retrieveScope(node.children[0].data, stack=node.children[0].scopestack)
+					symboltable.allocateScope([declVarScope])
+
                     #print("calc RD,",node.children[1], file=self.output)
                     instructionList.append("calc RD, %s" % str(node.children[1]))
                     i = node.children[0].data
@@ -207,7 +210,14 @@ class IntermediateRepresentation(Visitor):
                     if len(node.children) > 2 and node.children[2].name == 'MULTI_ASSIGN':
                         instructionList += self.visit(node.children[2])
 
-                elif node.name == 'START' :
+				elif node.name == 'MULTI':
+					declVarScope = self.symboltable.retrieveScope(node.children[0].data, stack=node.children[0].scopestack)
+					symboltable.allocateScope([declVarScope])
+                    instructionList = []
+                    for child in node.children:
+                        instructionList += self.visit(child)
+
+                elif node.name == 'START':
                     instructionList = []
                     for child in node.children:
                         instructionList += self.visit(child)
