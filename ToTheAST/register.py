@@ -1,10 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 class Register:
 	def __init__(self, name, memory=None):
 		self.name = name
-		self.memoryloc = memory 
+		self.memory = memory 
 		self.assigned = False
+
+	def __str__(self):
+		return "name: " + self.name + " Memory: " + str(self.memory) + " allocated: " + str(self.assigned)
 
 
 class RegisterTracker:
@@ -23,19 +26,21 @@ class RegisterTracker:
 			self.workRegList.append(Register('R%d' % (i + self.allocRegNum)))
 
 		#stack pointer
-		self.sp = 34767
+		self.baseSp = 34768
+		self.sp = 34768
 
 	def getWorkReg(self):
 		for i in range(0, self.workRegNum):
 			if self.workRegList[i].assigned == False:
 				self.workRegList[i].assigned = True
-				return workRegList[i]
+				return self.workRegList[i]
+		raise Exception('NO MORE WORKING REGISTERS TO ALLOCATE!!!!!')
 
 	def getReg(self):
 		for i in range(0, self.allocRegNum):
-			if self.regList[i].assigned == False:
-				self.regList[i].assigned = True
-				return self.regList[i]
+			if self.allocRegList[i].assigned == False:
+				self.allocRegList[i].assigned = True
+				return self.allocRegList[i]
 
 		#if Virtual
 		vReg = Register('Virtual', self.sp)
@@ -44,17 +49,27 @@ class RegisterTracker:
 
 	def freeAllocReg(self, regName):
 		for reg in self.allocRegList:
+			
 			if reg.name == regName:
-				reg.assigned == False
+				if reg.assigned == False:
+					raise Exception('Allocatable register ' + reg.name + ' is already free')
+				else:
+					reg.assigned = False
 
 	def freeWorkReg(self, regName):
-		for reg in self.WorkRegList:
+		for reg in self.workRegList:
 			if reg.name == regName:
-				reg.assigned == False
+				if reg.assigned == False:
+					raise Exception('Working register ' + reg.name + ' is already free')
+				else:
+					reg.assigned = False
 
 	#Passes in number of registers to free NOT amount of memory to free
 	def freeVirtualReg(self, numToFree):
-		self.sp += (numToFree * 8)
+		if (self.sp + (numToFree * 8)) > self.baseSp:
+			raise Exception('NOTHING VIRTUAL LEFT TO DEALLOCATE!!!!')
+		else:
+			self.sp += (numToFree * 8)
 
 
 
