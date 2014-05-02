@@ -183,8 +183,8 @@ class IntermediateRepresentation(Visitor):
                     instructionList.append("memst RX, %s" % str(self.mmap[j]))
 
                 elif node.name == 'DECL':
-					declVarScope = self.symboltable.retrieveScope(node.children[1].data, stack=node.children[1].scopestack)
-					symboltable.allocateScope([declVarScope])
+                    currVarScope = self.symboltable.retrieveScope(node.children[1].data, stack=node.children[1].scopestack)
+                    symboltable.allocateScope([currVarScope])
 
                     if len(node.children) > 2:
                         if node.children[2].name != 'MULTI_ASSIGN':
@@ -198,8 +198,8 @@ class IntermediateRepresentation(Visitor):
                             instructionList += self.visit(node.children[2])
 
                 elif node.name == 'MULTI_ASSIGN':
-					declVarScope = self.symboltable.retrieveScope(node.children[0].data, stack=node.children[0].scopestack)
-					symboltable.allocateScope([declVarScope])
+                    currVarScope = self.symboltable.retrieveScope(node.children[0].data, stack=node.children[0].scopestack)
+                    symboltable.allocateScope([currVarScope])
 
                     #print("calc RD,",node.children[1], file=self.output)
                     instructionList.append("calc RD, %s" % str(node.children[1]))
@@ -210,23 +210,20 @@ class IntermediateRepresentation(Visitor):
                     if len(node.children) > 2 and node.children[2].name == 'MULTI_ASSIGN':
                         instructionList += self.visit(node.children[2])
 
-				elif node.name == 'MULTI':
-					declVarScope = self.symboltable.retrieveScope(node.children[0].data, stack=node.children[0].scopestack)
-					symboltable.allocateScope([declVarScope])
+                elif node.name == 'MULTI':
+                    currVarScope = self.symboltable.retrieveScope(node.children[0].data, stack=node.children[0].scopestack)
+                    symboltable.allocateScope([currVarScope])
                     instructionList = []
                     for child in node.children:
                         instructionList += self.visit(child)
 				
-				elif node.name == 'CODEBLOCK':
+                elif node.name == 'CODEBLOCK':
                     instructionList = []
                     for child in node.children:
                         instructionList += self.visit(child)
 
-					codeBlockScope = node.children[0].scopestack[0]
-					deallocateScope(codeBlockScope);
-					
-					
-
+                    codeBlockScope = node.children[0].scopestack[0]
+                    symboltable.deallocateScope(codeBlockScope);
 
                 elif node.name == 'START':
                     instructionList = []
