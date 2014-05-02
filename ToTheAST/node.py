@@ -3,6 +3,8 @@ from sys import intern
 
 from symboltable import SymbolTable
 
+from register import *
+
 class Node:
     count = 0
 
@@ -24,6 +26,9 @@ class Node:
 
         # Populated by Sethi Ullman visitor
         self.regCount = None
+
+        #Populated by the RegAllocationVisitor
+        self.register = None
 
     def addChild(self, newChild):
         if newChild is not None:
