@@ -216,6 +216,17 @@ class IntermediateRepresentation(Visitor):
                     instructionList = []
                     for child in node.children:
                         instructionList += self.visit(child)
+				
+				elif node.name == 'CODEBLOCK':
+                    instructionList = []
+                    for child in node.children:
+                        instructionList += self.visit(child)
+
+					codeBlockScope = node.children[0].scopestack[0]
+					deallocateScope(codeBlockScope);
+					
+					
+
 
                 elif node.name == 'START':
                     instructionList = []

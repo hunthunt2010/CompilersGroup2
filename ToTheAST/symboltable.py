@@ -141,7 +141,7 @@ class MemoryMap:
 			else
 				return None
 
-	def freeScope(self, scopeVar):
+	def deallocateScope(self, scopeVar):
 		"Frees scope from local variables"
 		for mappedVar in self._mmap:
 			if mappedVar.scope == scopeVar:
