@@ -123,27 +123,27 @@ class MemoryMap:
         # Hardcoded memory location size: 8 bytes
         self.memptr += (8*n)
 
-	def decrementMemptr(self, n=1):
-		self.memptr -= (8*n)
+    def decrementMemptr(self, n=1):
+        self.memptr -= (8*n)
 
-	def allocateScope(self, listSymEnt):
-		"Allocates local variables for a scope"
-		for var in listSymEnt:
-			self._mmap[var] = self.memptr
-			self.incrementMemptr()
+    def allocateScope(self, listSymEnt):
+        "Allocates local variables for a scope"
+        for var in listSymEnt:
+            self._mmap[var] = self.memptr
+            self.incrementMemptr()
 
-	def lookUpVar(self, nameVar, scopeVar):
-		'''Given the name and scope of a variable, return the mem location that it resides in or none if mem location is not allocated '''	
-			symEntry = self.symtable._symbolHash[nameVar][scopeVar]
+    def lookUpVar(self, nameVar, scopeVar):
+        '''Given the name and scope of a variable, return the mem location that it resides in or none if mem location is not allocated '''	
+        symEntry = self.symtable._symbolHash[nameVar][scopeVar]
 
-			if symEntry in  self._mmap:
-				return self._mmap[symEntry]			
-			else
-				return None
+        if symEntry in  self._mmap:
+            return self._mmap[symEntry]			
+        else:
+            return None
 
-	def freeScope(self, scopeVar):
-		"Frees scope from local variables"
-		for mappedVar in self._mmap:
-			if mappedVar.scope == scopeVar:
-				del self._mmap[mappedVar] 
-				self.decrementMemptr()
+    def deallocateScope(self, scopeVar):
+        "Frees scope from local variables"
+        for mappedVar in self._mmap:
+            if mappedVar.scope == scopeVar:
+                del self._mmap[mappedVar] 
+                self.decrementMemptr()
