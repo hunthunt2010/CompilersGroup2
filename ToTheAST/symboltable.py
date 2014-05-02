@@ -132,18 +132,22 @@ class MemoryMap:
             self._mmap[var] = self.memptr
             self.incrementMemptr()
 
-    def lookUpVar(self, nameVar, scopeVar):
+    def lookUpVar(self, nameVar, scopeStack):
         '''Given the name and scope of a variable, return the mem location that it resides in or none if mem location is not allocated '''	
-        symEntry = self.symtable._symbolHash[nameVar][scopeVar]
+        symEntry = self.symtable.retrieveScope(nameVar, stack=scopeStack)
+		# _symbolHash[nameVar][scopeVar]
 
         if symEntry in  self._mmap:
-            return self._mmap[symEntry]			
+            return self._mmap[symEntry]
         else:
             return None
 
     def deallocateScope(self, scopeVar):
         "Frees scope from local variables"
-        for mappedVar in self._mmap:
+        "Capture the keys, put them in a list, and iterate over said list"
+        for mappedVar in list(self._mmap.keys()):
             if mappedVar.scope == scopeVar:
                 del self._mmap[mappedVar] 
+
                 self.decrementMemptr()
+
