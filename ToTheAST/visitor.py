@@ -390,7 +390,7 @@ class IntermediateRepresentation(Visitor):
  
                    # When we convert the register into a work register, we need to load it into the work register for use
                     # in the calculation
-                    instructionList.append("memld " + node.children[childIndex].register.name + ", " + oldVirtualRegisters[-1][0].name)
+                    instructionList.append("memld %s, %i" % (node.children[childIndex].register.name, oldVirtualRegisters[-1][0].memory))
 
             # Find which child register is optimal, so that we can place the result appropriately
             # Since the children cannot be virtual anymore, the operand and result location WILL
@@ -406,7 +406,7 @@ class IntermediateRepresentation(Visitor):
             # if the result is supposed to be in a virtual register, we need to copy it from the
             # real register into the virtual register.
             if node.register.memory is not None:
-                instructionList.append("memst %s, %i" % (node.children[optimalChild].name, node.register.memory))
+                instructionList.append("memst %s, %i" % (node.children[optimalChild].register.name, node.register.memory))
 
             # Deallocate ALL registers, so long as they do NOT contain the result (used by the parent)
             for child in node.children:
@@ -467,7 +467,6 @@ class PrintWithStrahlerNumber(Visitor):
 
         super().visit(node)
 
-
 # Sethi Ullman register needs algorithm
 class RegisterNeedsVisitor(Visitor):
 
@@ -492,12 +491,3 @@ class RegisterNeedsVisitor(Visitor):
         else:
             # Recurse down to all the binaryoperator nodes
             super().visit(node)
-
-
-
-
-
-
-
-
-
