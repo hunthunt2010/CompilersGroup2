@@ -119,6 +119,7 @@ class MemoryMap:
                 self._mmap[self.symtable._symbolHash[var][0]] = self.memptr
                 self.incrementMemptr()
 
+                
     def incrementMemptr(self, n=1):
         # Hardcoded memory location size: 8 bytes
         self.memptr += (8*n)
@@ -129,14 +130,15 @@ class MemoryMap:
     def allocateScope(self, listSymEnt):
         "Allocates local variables for a scope"
         for var in listSymEnt:
-            self._mmap[var] = self.memptr
-            self.incrementMemptr()
+            if var.scope != 0:
+                self._mmap[var] = self.memptr
+                self.incrementMemptr()
 
     def lookUpVar(self, nameVar, scopeStack):
         '''Given the name and scope of a variable, return the mem location that it resides in or none if mem location is not allocated '''	
         symEntry = self.symtable.retrieveScope(nameVar, stack=scopeStack)
 		# _symbolHash[nameVar][scopeVar]
-
+        # print("Looking up %s with stack %s. sym entry: %s" % (nameVar, str(scopeStack), str(symEntry)))
         if symEntry in  self._mmap:
             return self._mmap[symEntry]
         else:
