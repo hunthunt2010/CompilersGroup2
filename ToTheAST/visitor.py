@@ -132,7 +132,7 @@ class IntermediateRepresentation(Visitor):
 
         if node.name == 'RETURN':
                     #print("return", file=self.output)
-            instructionList.append('return')
+            instructionList.append('jump +0')
 
             # elif node.name == 'VALUE':
             #       print("immld RX,",node.data)
@@ -163,28 +163,28 @@ class IntermediateRepresentation(Visitor):
                     calcReg = self.registerTracker.getWorkReg()
                     instructionList.append("memld %s, %i" % (calcReg.name, node.children[0].register.memory))
 
-                    instructionList.append("relbfalse %i, %s" % (ifjumpNum + 2, calcReg.name))
+                instructionList.append("relbfalse %i, %s" % (ifjumpNum + 2, calcReg.name))
 
-                    # Free calculation register
-                    self.registerTracker.freeOneRegister(calcReg)
-                    if node.children[0].register.memory is not None:
-                        self.registerTracker.freeOneRegister(node.children[0].register)
+                # Free calculation register
+                self.registerTracker.freeOneRegister(calcReg)
+                if node.children[0].register.memory is not None:
+                    self.registerTracker.freeOneRegister(node.children[0].register)
 
-                elif node.children[0].name == 'VALUE':
-                    # Load that into a register for comparison
-                    valReg = self.registerTracker.getWorkReg()
-                    if node.children[0].data.isdigit():
-                        # use immediate
-                        instructionList.append("immld %s, %i" % (valReg.name, int(node.children[0].data)))
-                    else:
-                        instructionList.append("memld %s, %i" % (valReg.name, self.mmap.lookUpVar(node.children[0].data, node.children[0].scopestack)))
+            elif node.children[0].name == 'VALUE':
+                # Load that into a register for comparison
+                valReg = self.registerTracker.getWorkReg()
+                if node.children[0].data.isdigit():
+                    # use immediate
+                    instructionList.append("immld %s, %i" % (valReg.name, int(node.children[0].data)))
+                else:
+                    instructionList.append("memld %s, %i" % (valReg.name, self.mmap.lookUpVar(node.children[0].data, node.children[0].scopestack)))
 
-                    instructionList.append("relbfalse %i, %s" % (ifjumpNum + 2, valReg.name))
-                    self.registerTracker.freeOneRegister(valReg)
+                instructionList.append("relbfalse %i, %s" % (ifjumpNum + 2, valReg.name))
+                self.registerTracker.freeOneRegister(valReg)
 
-                instructionList.extend(blockA)
-                instructionList.append("reljump %i" % (elsejumpNum + 1))
-                instructionList.extend(blockB)
+            instructionList.extend(blockA)
+            instructionList.append("reljump %i" % (elsejumpNum + 1))
+            instructionList.extend(blockB)
 
         elif node.name == 'IF':
             block = self.visit(node.children[1])
@@ -201,7 +201,7 @@ class IntermediateRepresentation(Visitor):
                     calcReg = self.registerTracker.getWorkReg()
                     instructionList.append("memld %s, %i" % (calcReg.name, node.children[0].memory))
 
-                instructionList.append("relbfalse %i, %s" % (jumpNum + 2, calcReg.name))
+                instructionList.append("relbfalse %i, %s" % (jumpNum + 1, calcReg.name))
 
                 # Free calculation register
                 self.registerTracker.freeOneRegister(calcReg)
@@ -267,6 +267,8 @@ class IntermediateRepresentation(Visitor):
                 instructionList.append("memst %s, %i" % (wreg.name, destMemAddr))
                 self.registerTracker.freeOneRegister(wreg)
 
+            self.registerTracker.freeOneRegister(node.children[1].register)
+
             # instructionList.append("calc RX, %s" % str(node.children[1]))
             #i = node.children[0].data
             #j = self.symboltable.retrieveScope(i, stack=node.children[0].scopestack)
@@ -294,11 +296,12 @@ class IntermediateRepresentation(Visitor):
                         instructionList.append("memst %s, %i" % (wreg.name, destMemAddr))
                         self.registerTracker.freeOneRegister(wreg)
 
+                    self.registerTracker.freeOneRegister(node.children[2].register)
 
                     # i = node.children[1].data
                     # j = self.symboltable.retrieveScope(i, stack=node.children[1].scopestack)
                     #print("memst RX,",self.mmap[j], file=self.output)
-                    instructionList.append("memst RX, %s" % str(self.mmap.lookUpVar(node.children[1].data, node.children[1].scopestack)))
+                    # instructionList.append("memst RX, %s" % str(self.mmap.lookUpVar(node.children[1].data, node.children[1].scopestack)))
                 else:
                     instructionList += self.visit(node.children[2])
 
@@ -363,12 +366,12 @@ class IntermediateRepresentation(Visitor):
         if node.name == 'BINARYOPERATOR':
             # Recurse upon the child with the LARGEST register requirements first
             # If the requirements are equal, the right side is traversed
-            self.internalVisit(node.children[0]
+            instructionList.extend(self.internalVisit(node.children[0]
                                if node.children[0].regCount > node.children[1].regCount
-                               else node.children[1])
-            self.internalVisit(node.children[0]
+                               else node.children[1]))
+            instructionList.extend(self.internalVisit(node.children[0]
                                if node.children[0].regCount <= node.children[1].regCount
-                               else node.children[1])
+                               else node.children[1]))
 
             # Choose the best destination. Note that the parent register (node.register) COULD be virtual
             if (node.children[0].register.isMoreOptimal(node.children[1].register)):
@@ -398,7 +401,7 @@ class IntermediateRepresentation(Visitor):
             # Make the instruction
             instructionList.append(node.data + " " + 
                                        node.children[optimalChild].register.name
-                                       + "," + node.children[0].register.name + ", " + node.children[1].register.name)
+                                       + " ," + node.children[0].register.name + ", " + node.children[1].register.name)
 
             # if the result is supposed to be in a virtual register, we need to copy it from the
             # real register into the virtual register.
@@ -414,8 +417,23 @@ class IntermediateRepresentation(Visitor):
                 if oldReg is not node.register:
                     self.registerTracker.freeOneRegister(oldReg)
 
-        elif (node.name == 'IDENTIFIER' or node.name == 'VALUE'):
+        elif node.name == 'VALUE':
             node.register = self.registerTracker.getReg()
+            if isinstance(node.data, int):
+                if node.register.memory is None:
+                    instructionList.append("immld %s, %i" % (node.register.name, node.data))
+                else:
+                    instructionList.append("immpush %i" % (node.data))
+                    instructionList.append("mempop %i" % (node.register.memory))
+            else:
+                srcMemAddr = self.mmap.lookUpVar(node.data, node.scopestack)
+                if node.register.memory is None:
+                    instructionList.append("memld %s, %i" % (node.register.name, srcMemAddr))
+                else:
+                    tempReg = self.registerTracker.getWorkReg()
+                    instructionList.append("memld %s, %i" % (tempReg.name, srcMemAddr))
+                    instructionList.append("memst %s, %i" % (tempReg.name, node.register.memory))
+                    self.registerTracker.freeOneRegister(tempReg)
 
         return instructionList
 
