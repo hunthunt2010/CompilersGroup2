@@ -122,10 +122,10 @@ class MemoryMap:
                 
     def incrementMemptr(self, n=1):
         # Hardcoded memory location size: 8 bytes
-        self.memptr += (8*n)
+        self.memptr += (4*n)
 
     def decrementMemptr(self, n=1):
-        self.memptr -= (8*n)
+        self.memptr -= (4*n)
 
     def allocateScope(self, listSymEnt):
         "Allocates local variables for a scope"
