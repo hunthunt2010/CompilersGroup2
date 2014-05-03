@@ -22,6 +22,8 @@ class Register:
 			return False
 
 class RegisterTracker:
+	baseSp = 34768
+
 	def __init__(self):
 		self.allocRegNum = 9 
 		self.workRegNum = 3
@@ -37,8 +39,7 @@ class RegisterTracker:
 			self.workRegList.append(Register('R%d' % (i + self.allocRegNum)))
 
 		#stack pointer
-		self.baseSp = 34768
-		self.sp = 34768
+		self.sp = self.baseSp
 
 	def getWorkReg(self):
 		for i in range(0, self.workRegNum):

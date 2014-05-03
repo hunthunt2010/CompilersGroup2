@@ -478,10 +478,10 @@ class RegisterNeedsVisitor(Visitor):
             if len(node.children) is 0:
                 node.regCount = 0
             else:
-                print("%s -> %s(%s) : %s(%s)" % (node.name, node.children[0].name, node.children[0].regCount, node.children[1].name, node.children[1].regCount))
+                #print("%s -> %s(%s) : %s(%s)" % (node.name, node.children[0].name, node.children[0].regCount, node.children[1].name, node.children[1].regCount))
                 self.visit(node.children[0])
                 self.visit(node.children[1])
-                print("%s -> %s(%s) : %s(%s)" % (node.name, node.children[0].name, node.children[0].regCount, node.children[1].name, node.children[1].regCount))
+                #print("%s -> %s(%s) : %s(%s)" % (node.name, node.children[0].name, node.children[0].regCount, node.children[1].name, node.children[1].regCount))
 
                 if node.children[0].regCount == node.children[1].regCount:
                     node.regCount = node.children[1].regCount + 1

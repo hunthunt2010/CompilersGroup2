@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import fileinput
+import math
 import sys
 
 import ply.lex as lex
@@ -325,11 +326,21 @@ else:
     # mmapfile = open("OUTPUT.mmap", "w")
     # Returns a memory map that has the globals allocated, and can dynamically allocate variables
     mmap = symboltable.createMemoryMap()
+    
     # for sym in mmap:
     #     print("%s (%i): %i" % (symboltable.namespace.getName(sym.name), sym.scope, mmap[sym]), file=mmapfile)
     # mmapfile.close()
     IntermediateRepresentation(symboltable, mmap, file=irfile).visit(root)
     irfile.close()
+
+    numinstructions = len(open("OUTPUT.ir").readlines())
+    print("Memory_Map.asciipng")
+    print("Units are per 500 bytes, with | as a section separator")
+    numglobals = 0
+    for var in mmap._mmap:
+        if var.scope == 0:
+            numglobals += 1
+    print(("|I" *int(math.ceil(numinstructions/500))) + "|"+ ("_"*int(math.ceil(20000-numinstructions*4)/500)) + "|" + ("G"*int(math.ceil(numglobals*4/500))) +"|" + "HEAP...." + "."*int(math.ceil((RegisterTracker.baseSp-8000-20000)/500))+ "...STACK|")
 
     # OUTPUT.err:   list of errors during compilation
     errfile = open("OUTPUT.err", "w")
